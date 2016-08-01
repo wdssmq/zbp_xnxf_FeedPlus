@@ -67,11 +67,11 @@ function FeedPlus_Post(&$article) {
 }
 function FeedPlus_Path($path) {
   global $zbp;
-  $MyPath = $zbp->path . "zb_users\plugin\xnxf_FeedPlus\db\\";
+  $MyPath = $zbp->path . "zb_users/plugin/xnxf_FeedPlus/";
   $MyHost = $zbp->host . "zb_users/plugin/xnxf_FeedPlus/";
   switch($path) {
     case "PostDB":
-      return $MyPath . "Posts.json";
+      return $MyPath . "db/Posts.json";
       break;
     case "Script":
       return $MyHost . "source/script.js";
