@@ -1,6 +1,6 @@
 $(function () {
   $('#edtAlias,#edtTag,#cmbTemplate,#edtIstopType,#edtIslock').parent().fadeOut();
-  $("#divEditTitle").append("<p><span class=\"editinputname\">链接:</span> <input onfocus=\"if(this.value=='"+ bloghost +"') this.value=''\" onblur=\"if(this.value=='') this.value='"+bloghost+"'\" type=\"text\" value=\"\" maxlength=\"250\" id=\"edtLink\" name=\"edtLink\" style=\"width:60%;max-width:520px\"></p>");
+  $("#divEditTitle").append("<p><span class=\"editinputname\">链接:</span> <input onmouseover=\"this.select()\" onblur=\"if(this.value=='') this.value='"+bloghost+"'\" type=\"text\" value=\"\" maxlength=\"250\" id=\"edtLink\" name=\"edtLink\" style=\"width:60%;max-width:520px\"></p>");
   if (typeof sEdtLink == "string"){
     $('#edtLink').val(sEdtLink);
   }else{
