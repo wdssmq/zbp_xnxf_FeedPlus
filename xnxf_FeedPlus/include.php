@@ -2,10 +2,15 @@
 //注册插件
 RegisterPlugin("xnxf_FeedPlus", "ActivePlugin_xnxf_FeedPlus");
 function ActivePlugin_xnxf_FeedPlus() {
+	Add_Filter_Plugin('Filter_Plugin_Admin_TopMenu','FeedPlus_AddMenu');
   Add_Filter_Plugin('Filter_Plugin_PostArticle_Core', 'FeedPlus_Post');
   Add_Filter_Plugin('Filter_Plugin_Edit_Begin', 'FeedPlus_Get');
   Add_Filter_Plugin('Filter_Plugin_ViewAuto_Begin', 'FeedPlus_Rewrite');
   Add_Filter_Plugin('Filter_Plugin_ViewPost_Template', 'FeedPlus_LuckyView');
+}
+function FeedPlus_AddMenu(&$m){
+	global $zbp;
+	$m[]=MakeTopMenu("root",'FeedPlus',$zbp->host . "zb_users/plugin/xnxf_FeedPlus/main.php","","FeedPlus");
 }
 function FeedPlus_Edit() {
   echo "<script src='" . FeedPlus_Path("Script") . "' type='text/javascript'></script>";
