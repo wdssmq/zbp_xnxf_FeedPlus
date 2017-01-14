@@ -36,7 +36,8 @@ $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
 $LuckyCFG = &$LuckyData->Lucky;
 $strCodes = join("\n",$LuckyData->Codes);
 if($act=="save"){
-  $LuckyCFG->Time = time() + 1800;
+  if ($LuckyCFG->Time < time())
+    $LuckyCFG->Time = time() + 1800;
   $LuckyCFG->PageID = trim(GetVars("edtPageID","POST"));
   $LuckyCFG->Title = GetVars("edtTitle","POST");
   $LuckyCFG->Link = trim(GetVars("edtLink","POST"));
