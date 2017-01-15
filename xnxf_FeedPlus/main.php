@@ -18,7 +18,7 @@ if ($act=="lucky"){
 }
 
 $Post =  FeedPlus_GetLucky();
-$LuckyUrl = $Post == null ? "" : $Post->Link;
+$LuckyUrl = $Post == null ? "" : $Post->Url;
 
 ?>
 <style type="text/css">
@@ -116,9 +116,9 @@ if($act=="save"){
       </tr>
 <?php
 if (is_file(FeedPlus_Path("PostDB"))){
-  $Posts = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
-  $Posts->Posts = (array)$Posts->Posts;
-  foreach($Posts->Posts as $k=>$v){
+  $DataDB = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
+  $DataDB->Posts = (array)$DataDB->Posts;
+  foreach($DataDB->Posts as $k=>$v){
     $Post = json_decode($v);
     $author = new Member;
     $author = $zbp->GetMemberByID($Post->User);
@@ -126,8 +126,8 @@ if (is_file(FeedPlus_Path("PostDB"))){
       "<td>" . $Post->ID . "</td>" .
       "<td>" . $author->StaticName . "</td>" .
       "<td>" . $Post->Title . "</td>" .
-      "<td><a href='" . $Post->Link . "' title='" . $Post->Title . "' target='_blank'>" . $Post->Link . "</a></td>" .
-      "<td>" . Date("Y-m-d h:i:s", $Post->PubDate) . "</td>" .
+      "<td><a href='" . $Post->Url . "' title='" . $Post->Title . "' target='_blank'>" . $Post->Url . "</a></td>" .
+      "<td>" . Date("Y-m-d h:i:s", $Post->PostTime) . "</td>" .
       "<td>" . $zbp->lang['post_status_name'][$Post->Public] . "</td>" .
       "<td align='center'><a href='" . $zbp->host . "zb_system/admin/edit.php?act=ArticleEdt&amp;type=Feed&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/page_edit.png' alt='" . $zbp->lang['msg']['edit'] . "' title='" . $zbp->lang['msg']['edit'] . "' width='16' /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick='return window.confirm(\"" . $zbp->lang['msg']['confirm_operating'] . "\");' href='" . FeedPlus_Path("Main") . "?act=FeedDel&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/delete.png' alt='" .$zbp->lang['msg']['edit'] . "' title='" .$zbp->lang['msg']['edit'] . "' width='16' /></a></td>" .
     "</tr>";
