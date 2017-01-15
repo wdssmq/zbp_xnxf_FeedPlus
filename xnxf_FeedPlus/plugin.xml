@@ -19,10 +19,10 @@
   <url></url>
 </source>
 <adapted>151626</adapted>
-<version>0.7</version>
+<version>0.8</version>
 <pubdate>2016-07-25</pubdate>
-<modified>2017-01-14</modified>
-<price>37.87</price>
+<modified>2017-01-15</modified>
+<price>45.22</price>
 <advanced>
   <dependency>BetterFeed</dependency>
   <rewritefunctions></rewritefunctions>

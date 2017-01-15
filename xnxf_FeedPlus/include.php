@@ -79,6 +79,9 @@ function FeedPlus_GetLucky(&$hash = "") {
   if($code == "")
     return null;
   if($hash != $strHash) {
+	if($LuckyCFG->Time > time())
+	  return null;
+    file_put_contents(FeedPlus_Path("Log","p"), GetGuestAgent()."\n",FILE_APPEND);
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
@@ -87,7 +90,7 @@ function FeedPlus_GetLucky(&$hash = "") {
   }
   $Post          = new FeedPlus_Post();
 
-  $Post->Time   = $LuckyCFG->Time;
+  // $Post->Time   = $LuckyCFG->Time;
   $Post->Title   = $LuckyCFG->Title;
   $Post->Link    = str_replace("{%host%}", $zbp->host, $LuckyCFG->Link);
   $Post->Link    = str_replace("{%hash%}", $strHash, $Post->Link);
@@ -95,7 +98,7 @@ function FeedPlus_GetLucky(&$hash = "") {
   $Post->Content = str_replace("{%code%}", $code, $LuckyCFG->Content);
   $Post->Content = str_replace("{%url%}", $Post->Link, $Post->Content);
   $Post->Content = str_replace("{%feed%}", $zbp->host . "feed.php", $Post->Content);
-  $Post->PubDate = time();
+  $Post->PubDate = $LuckyCFG->Time;
   return $Post;
 }
 function FeedPlus_Get() {
@@ -151,6 +154,9 @@ function FeedPlus_Path($path) {
   $MyPath = $zbp->path . "zb_users/plugin/xnxf_FeedPlus/";
   $MyHost = $zbp->host . "zb_users/plugin/xnxf_FeedPlus/";
   switch($path) {
+    case "Log":
+      return $MyPath . "cache/Log.json";
+      break;
     case "PostDB":
       return $MyPath . "db/Posts.json";
       break;
@@ -173,6 +179,9 @@ function FeedPlus_Path($path) {
 function InstallPlugin_xnxf_FeedPlus() {
   if(!is_file(FeedPlus_Path('PostDB'))) {
     @mkdir(dirname(FeedPlus_Path('PostDB')), 0755);
+  }
+  if(!is_file(FeedPlus_Path('Log'))) {
+    @mkdir(dirname(FeedPlus_Path('Log')), 0755);
   }
   if(!is_file(FeedPlus_Path('LuckyDB'))) {
     $data = '{"Lucky":{"Time":1,"PageID":1,"Title":"【手慢无】点击查看福利","Link":"{%host%}?id={%PageID%}&hash={%hash%}&rewrite=1","Salt":123456,"Content":"不定期通过Feed发放福利<br />{%code%}<br />强烈建议使用下边地址订阅收取福利通知：<br /><a href=\"{%feed%}\" target=\"_blank\" title=\"{%feed%}\">{%feed%}</a>"},"Codes":[""]}';
