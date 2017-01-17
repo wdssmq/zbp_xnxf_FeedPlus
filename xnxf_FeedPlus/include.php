@@ -21,7 +21,9 @@ function FeedPlus_AddToFeed(&$Posts)
       $Posts[]=$Post;
     }
   }
-  $Posts[]=FeedPlus_GetLucky();
+  $Post = FeedPlus_GetLucky();
+  if($Post !==null)
+  $Posts[]=$Post;
   return null;
 }
 function FeedPlus_AddMenu(&$m)
@@ -102,9 +104,9 @@ function FeedPlus_GetLucky(&$hash = "")
   if ($code == "")
     return null;
   if ($hash != $strHash) {
-    if ($LuckyCFG->Time > time())
-    //return null;
-      file_put_contents(FeedPlus_Path("Log", "p"), GetGuestAgent() . "\n", FILE_APPEND);
+    if ($LuckyCFG->Time > time() && $hash=="")
+      return null;
+    file_put_contents(FeedPlus_Path("Log", "p"), GetGuestAgent() . "\n", FILE_APPEND);
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
@@ -120,6 +122,8 @@ function FeedPlus_GetLucky(&$hash = "")
   $Post->Content  = str_replace("{%code%}", $code, $LuckyCFG->Content);
   $Post->Content  = str_replace("{%url%}", $Post->Url, $Post->Content);
   $Post->Content  = str_replace("{%feed%}", $zbp->host . "feed.php", $Post->Content);
+  $Post->Content  = str_replace("[lock]", "", $Post->Content);
+  $Post->Content  = str_replace("[/lock]", "", $Post->Content);
   $Post->PostTime = $LuckyCFG->Time;
   return $Post;
 }
@@ -143,7 +147,7 @@ function FeedPlus_Get()
     Add_Filter_Plugin('Filter_Plugin_Edit_Response5', 'FeedPlus_Edit');
   }
 }
-function FeedPlus_Post(&$article)
+function FeedPlus_Post($article)
 {
   global $zbp;
   if ($article->CateID == "Feed") {
@@ -205,6 +209,8 @@ function InstallPlugin_xnxf_FeedPlus()
 {
   if (!is_file(FeedPlus_Path('PostDB'))) {
     @mkdir(dirname(FeedPlus_Path('PostDB')), 0755);
+    $DataDB = new FeedPlus_Posts();
+    file_put_contents(FeedPlus_Path("PostDB"), json_encode($DataDB));
   }
   if (!is_file(FeedPlus_Path('Log'))) {
     @mkdir(dirname(FeedPlus_Path('Log')), 0755);
@@ -228,7 +234,7 @@ class FeedPlus_Posts
 class FeedPlus_Post
 {
   public $ID = 0;
-  public $Public = 0;
+  public $Public = 1;
   public $User = 1;
   public $Title = "未命名文章";
   public $Url = "";

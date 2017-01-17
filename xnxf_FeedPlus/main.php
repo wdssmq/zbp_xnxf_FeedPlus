@@ -17,7 +17,8 @@ if ($act=="lucky"){
   $ddf[1] = "m-now";
 }
 
-$Post =  FeedPlus_GetLucky();
+$strHash = "gfg";
+$Post =  FeedPlus_GetLucky($strHash);
 $LuckyUrl = $Post == null ? "" : $Post->Url;
 
 ?>
