@@ -18,12 +18,15 @@ function FeedPlus_AddToFeed(&$Posts)
   foreach ($DataDB->Posts as $k => $v) {
     $Post = json_decode($v);
     if ($Post->Public == 0) {
-      $Posts[]=$Post;
+      $Posts[] = $Post;
     }
   }
   $Post = FeedPlus_GetLucky();
-  if($Post !==null)
-  $Posts[]=$Post;
+  if ($Post !== null) {
+    $Post->Content = str_replace("[lock]", "", $Post->Content);
+    $Post->Content = str_replace("[/lock]", "", $Post->Content);
+    $Posts[]       = $Post;
+  }
   return null;
 }
 function FeedPlus_AddMenu(&$m)
@@ -104,7 +107,7 @@ function FeedPlus_GetLucky(&$hash = "")
   if ($code == "")
     return null;
   if ($hash != $strHash) {
-    if ($LuckyCFG->Time > time() && $hash=="")
+    if ($LuckyCFG->Time > time() && $hash == "")
       return null;
     file_put_contents(FeedPlus_Path("Log", "p"), GetGuestAgent() . "\n", FILE_APPEND);
     $hash = $strHash;
@@ -122,8 +125,6 @@ function FeedPlus_GetLucky(&$hash = "")
   $Post->Content  = str_replace("{%code%}", $code, $LuckyCFG->Content);
   $Post->Content  = str_replace("{%url%}", $Post->Url, $Post->Content);
   $Post->Content  = str_replace("{%feed%}", $zbp->host . "feed.php", $Post->Content);
-  $Post->Content  = str_replace("[lock]", "", $Post->Content);
-  $Post->Content  = str_replace("[/lock]", "", $Post->Content);
   $Post->PostTime = $LuckyCFG->Time;
   return $Post;
 }
@@ -133,8 +134,8 @@ function FeedPlus_Get()
   global $xnxf_link;
   if (isset($_GET['type']) && $_GET['type'] == "Feed") {
     if (isset($_GET['id'])) {
-      $DataDB             = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
-      $DataDB->Posts      = (array) $DataDB->Posts;
+      $DataDB            = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
+      $DataDB->Posts     = (array) $DataDB->Posts;
       $Post              = json_decode($DataDB->Posts["ID" . $_GET['id']]);
       $article->AuthorID = $Post->User;
       $article->Status   = $Post->Public;
@@ -161,14 +162,14 @@ function FeedPlus_Post($article)
       $DataDB->MaxID += 1;
       $article->ID = $DataDB->MaxID;
     }
-    $Post                           = new FeedPlus_Post();
-    $Post->ID                       = $article->ID;
-    $Post->Public                   = (int) $article->Status;
-    $Post->User                     = (int) $article->AuthorID;
-    $Post->Title                    = $article->Title;
-    $Post->PostTime                 = $_POST['PostTime'];
-    $Post->Url                      = $_POST['edtLink'];
-    $Post->Content                  = $article->Content;
+    $Post                            = new FeedPlus_Post();
+    $Post->ID                        = $article->ID;
+    $Post->Public                    = (int) $article->Status;
+    $Post->User                      = (int) $article->AuthorID;
+    $Post->Title                     = $article->Title;
+    $Post->PostTime                  = $_POST['PostTime'];
+    $Post->Url                       = $_POST['edtLink'];
+    $Post->Content                   = $article->Content;
     $DataDB->Posts["ID" . $Post->ID] = json_encode($Post);
     file_put_contents(FeedPlus_Path("PostDB"), json_encode($DataDB));
     $zbp->BuildModule();
