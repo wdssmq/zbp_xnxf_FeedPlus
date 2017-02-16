@@ -34,16 +34,6 @@ function FeedPlus_AddMenu(&$m)
   global $zbp;
   $m[] = MakeTopMenu("root", 'FeedPlus', $zbp->host . "zb_users/plugin/xnxf_FeedPlus/main.php", "", "FeedPlus");
 }
-function FeedPlus_Edit()
-{
-  echo "<script src='" . FeedPlus_Path("Script") . "' type='text/javascript'></script>";
-}
-function FeedPlus_Edit_Link()
-{
-  global $xnxf_link;
-  echo '<script type="text/javascript">var sEdtLink = "' . $xnxf_link . '"</script>';
-}
-$xnxf_link = "";
 function FeedPlus_Rewrite($url)
 {
   global $zbp;
@@ -89,6 +79,8 @@ function FeedPlus_LuckyLink($post)
   $GLOBALS['hooks']['Filter_Plugin_Post_Url']['FeedPlus_LuckyLink'] = PLUGIN_EXITSIGNAL_RETURN;
   return $GLOBALS['LuckyLink'];
 }
+require_once 'class/UA_JSON.php';
+
 function FeedPlus_GetLucky(&$hash = "")
 {
   global $zbp;
@@ -110,6 +102,7 @@ function FeedPlus_GetLucky(&$hash = "")
     if ($LuckyCFG->Time > time() && $hash == "")
       return null;
     file_put_contents(FeedPlus_Path("Log", "p"), GetGuestAgent() . "\n", FILE_APPEND);
+    file_put_contents(FeedPlus_Path("Log", "p"), GetGuestIP() . "\n", FILE_APPEND);
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
@@ -128,6 +121,17 @@ function FeedPlus_GetLucky(&$hash = "")
   $Post->PostTime = $LuckyCFG->Time;
   return $Post;
 }
+function FeedPlus_Edit()
+{
+  echo "<script src='" . FeedPlus_Path("Script") . "' type='text/javascript'></script>";
+}
+function FeedPlus_Edit_Link()
+{
+  global $xnxf_link;
+  echo '<script type="text/javascript">var sEdtLink = "' . $xnxf_link . '"</script>';
+}
+$xnxf_link = "";
+
 function FeedPlus_Get()
 {
   global $article;
