@@ -20,7 +20,8 @@ if ($act=="lucky"){
 $strHash = "gfg";
 $Post =  FeedPlus_GetLucky($strHash);
 $LuckyUrl = $Post == null ? "" : $Post->Url;
-
+InstallPlugin_xnxf_FeedPlus();
+UA_JSON::Del();
 ?>
 <style type="text/css">
 td > input[type="text"]{
@@ -34,19 +35,20 @@ width:96%;
 <?php if($act=="lucky" || $act=="save") { ?>
 <?php
 $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
-$LuckyCFG = &$LuckyData->Lucky;
-$strCodes = join("\n",$LuckyData->Codes);
-if($act=="save"){
-  if ($LuckyCFG->Time < time())
+$LuckyCFG =& $LuckyData->Lucky;
+$strCodes = join("\n", $LuckyData->Codes);
+if ($act == "save") {
+  if ($LuckyCFG->Time < time()) {
     $LuckyCFG->Time = time() + 1800;
-  $LuckyCFG->PageID = trim(GetVars("edtPageID","POST"));
-  $LuckyCFG->Title = GetVars("edtTitle","POST");
-  $LuckyCFG->Link = trim(GetVars("edtLink","POST"));
-  $LuckyCFG->Salt = (int)trim(GetVars("edtSalt","POST"));
-  $LuckyCFG->Content = GetVars("txaContent","POST");
-  $strCodes = str_replace("\r\n","\n",GetVars("txaCodes","POST"));
-  $LuckyData->Codes = explode("\n",$strCodes);
-  file_put_contents(FeedPlus_Path("LuckyDB"),json_encode($LuckyData));
+  }
+  $LuckyCFG->PageID  = trim(GetVars("edtPageID", "POST"));
+  $LuckyCFG->Title   = GetVars("edtTitle", "POST");
+  $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
+  $LuckyCFG->Salt    = (int) trim(GetVars("edtSalt", "POST"));
+  $LuckyCFG->Content = GetVars("txaContent", "POST");
+  $strCodes          = str_replace("\r\n", "\n", GetVars("txaCodes", "POST"));
+  $LuckyData->Codes  = explode("\n", $strCodes);
+  file_put_contents(FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
   $zbp->SetHint('good');
   Redirect("main.php?act=lucky");
 }

@@ -22,7 +22,7 @@ function FeedPlus_AddToFeed(&$Posts)
     }
   }
   $Post = FeedPlus_GetLucky();
-  if ($Post !== null) {
+  if ($Post !== null && UA_JSON::Add()) {
     $Post->Content = str_replace("[lock]", "", $Post->Content);
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $Posts[]       = $Post;
@@ -101,8 +101,6 @@ function FeedPlus_GetLucky(&$hash = "")
   if ($hash != $strHash) {
     if ($LuckyCFG->Time > time() && $hash == "")
       return null;
-    file_put_contents(FeedPlus_Path("Log", "p"), GetGuestAgent() . "\n", FILE_APPEND);
-    file_put_contents(FeedPlus_Path("Log", "p"), GetGuestIP() . "\n", FILE_APPEND);
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
@@ -217,9 +215,7 @@ function InstallPlugin_xnxf_FeedPlus()
     $DataDB = new FeedPlus_Posts();
     file_put_contents(FeedPlus_Path("PostDB"), json_encode($DataDB));
   }
-  if (!is_file(FeedPlus_Path('Log'))) {
-    @mkdir(dirname(FeedPlus_Path('Log')), 0755);
-  }
+  UA_JSON::Create();
   if (!is_file(FeedPlus_Path('LuckyDB'))) {
     $data = '{"Lucky":{"Time":1,"PageID":1,"Title":"【手慢无】点击查看福利","Link":"{%host%}?id={%PageID%}&hash={%hash%}&rewrite=1","Salt":123456,"Content":"不定期通过Feed发放福利<br />{%code%}<br />强烈建议使用下边地址订阅收取福利通知：<br /><a href=\"{%feed%}\" target=\"_blank\" title=\"{%feed%}\">{%feed%}</a>"},"Codes":[""]}';
     file_put_contents(FeedPlus_Path('LuckyDB'), $data);
