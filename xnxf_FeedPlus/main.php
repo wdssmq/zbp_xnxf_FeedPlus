@@ -38,13 +38,16 @@ $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
 $LuckyCFG =& $LuckyData->Lucky;
 $strCodes = join("\n", $LuckyData->Codes);
 if ($act == "save") {
-  if ($LuckyCFG->Time < time()) {
-    $LuckyCFG->Time = time() + 1800;
+  $Salt = (int) trim(GetVars("edtSalt", "POST"));
+  if (UA_JSON::Add()) {
+    $LuckyCFG->Time = time() + 1877;
+    $Salt = $Salt + 1;
   }
+  $LuckyCFG->Time = time();
   $LuckyCFG->PageID  = trim(GetVars("edtPageID", "POST"));
   $LuckyCFG->Title   = GetVars("edtTitle", "POST");
   $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
-  $LuckyCFG->Salt    = (int) trim(GetVars("edtSalt", "POST"));
+  $LuckyCFG->Salt    = $Salt;
   $LuckyCFG->Content = GetVars("txaContent", "POST");
   $strCodes          = str_replace("\r\n", "\n", GetVars("txaCodes", "POST"));
   $LuckyData->Codes  = explode("\n", $strCodes);

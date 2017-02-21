@@ -38,7 +38,8 @@ class UA_JSON
     } else {
       if ($Guests->$IP->GuestAgent == $Agent && $Guests->$IP->ID < $data->MaxID - 3) {
         $result = true;
-        $Guests->$IP->ID = $data->MaxID;
+        $Guests->$IP->Time = time();
+        $Guests->$IP->ID = $data->MaxID + 3;
       }
     }
     $file = UA_JSON::FilePath();

@@ -1,4 +1,5 @@
 <?php
+require_once 'class/UA_JSON.php';
 //注册插件
 RegisterPlugin("xnxf_FeedPlus", "ActivePlugin_xnxf_FeedPlus");
 function ActivePlugin_xnxf_FeedPlus()
@@ -22,7 +23,7 @@ function FeedPlus_AddToFeed(&$Posts)
     }
   }
   $Post = FeedPlus_GetLucky();
-  if ($Post !== null && UA_JSON::Add()) {
+  if (UA_JSON::Add() && $Post !== null)  {
     $Post->Content = str_replace("[lock]", "", $Post->Content);
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $Posts[]       = $Post;
@@ -79,13 +80,14 @@ function FeedPlus_LuckyLink($post)
   $GLOBALS['hooks']['Filter_Plugin_Post_Url']['FeedPlus_LuckyLink'] = PLUGIN_EXITSIGNAL_RETURN;
   return $GLOBALS['LuckyLink'];
 }
-require_once 'class/UA_JSON.php';
 
 function FeedPlus_GetLucky(&$hash = "")
 {
   global $zbp;
   $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
   $LuckyCFG =& $LuckyData->Lucky;
+  if ($LuckyCFG->Time > time() && $hash == "")
+    return null;
   $NumsDays = floor((time() + $LuckyCFG->Salt) / 86400);
   $strHash  = substr(base_convert($NumsDays * $LuckyCFG->Salt, 10, 36), -6);
   $index    = $NumsDays % count($LuckyData->Codes);
@@ -99,8 +101,6 @@ function FeedPlus_GetLucky(&$hash = "")
   if ($code == "")
     return null;
   if ($hash != $strHash) {
-    if ($LuckyCFG->Time > time() && $hash == "")
-      return null;
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
