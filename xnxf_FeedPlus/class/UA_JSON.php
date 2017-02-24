@@ -33,10 +33,10 @@ class UA_JSON
     if (!isset($Guests->$IP)) {
       $data->MaxID++;
       $Guests->$IP             = json_decode('{"Time":' . time() . '}');
-      $Guests->$IP->GuestAgent = $Agent;
+      $Guests->$IP->Agent = $Agent;
       $Guests->$IP->ID = $data->MaxID;
     } else {
-      if ($Guests->$IP->GuestAgent == $Agent && $Guests->$IP->ID < $data->MaxID - 3) {
+      if ($Guests->$IP->Agent == $Agent && $Guests->$IP->ID < $data->MaxID - 3) {
         $result = true;
         $Guests->$IP->Time = time();
         $Guests->$IP->ID = $data->MaxID + 3;
