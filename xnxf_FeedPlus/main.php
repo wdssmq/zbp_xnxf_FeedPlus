@@ -38,16 +38,12 @@ $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
 $LuckyCFG =& $LuckyData->Lucky;
 $strCodes = join("\n", $LuckyData->Codes);
 if ($act == "save") {
-  $Salt = (int) trim(GetVars("edtSalt", "POST"));
-  if (UA_JSON::Add()) {
+  if ($LuckyCFG->Time < time()) {
     $LuckyCFG->Time = time() + 1877;
-    $Salt = $Salt + 1;
   }
-  $LuckyCFG->Time = time();
   $LuckyCFG->PageID  = trim(GetVars("edtPageID", "POST"));
   $LuckyCFG->Title   = GetVars("edtTitle", "POST");
   $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
-  $LuckyCFG->Salt    = $Salt;
   $LuckyCFG->Content = GetVars("txaContent", "POST");
   $strCodes          = str_replace("\r\n", "\n", GetVars("txaCodes", "POST"));
   $LuckyData->Codes  = explode("\n", $strCodes);
@@ -90,11 +86,6 @@ if ($act == "save") {
           </p>
           <p>{%hash%}值自动生成且每天一换；验证无效时会301到绑定的页面网址；</p>
         </td>
-      </tr>
-      <tr>
-        <td><label for="edtSalt">链接混淆：</label></td>
-        <td><input type="text" name="edtSalt" value="<?php echo $LuckyCFG->Salt ;?>" /></td>
-        <td>任意正整数，为{%hash%}值的生成加盐</td>
       </tr>
       <tr>
         <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><textarea name="txaContent" id="txaContent" cols="67" rows="13"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
