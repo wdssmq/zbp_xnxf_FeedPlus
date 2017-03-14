@@ -19,7 +19,7 @@ class UA_JSON
       if (!file_exists(dirname($file))) {
         @mkdir(dirname($file), 0755, true);
       }
-      file_put_contents($file, '{"Guests":{"::1":{"Time":1487651979,"GuestAgent":"RSS","ID":0}},"MaxID":0}');
+      file_put_contents($file, '{"Guests":{"8.8.8.8":{"Time":1487651979,"Agent":"RSS","ID":0}},"MaxID":0}');
     }
   }
   // UA_JSON::Add()
@@ -32,14 +32,14 @@ class UA_JSON
     $Agent = GetGuestAgent();
     if (!isset($Guests->$IP)) {
       $data->MaxID++;
-      $Guests->$IP             = json_decode('{"Time":' . time() . '}');
+      $Guests->$IP        = json_decode('{"Time":' . time() . '}');
       $Guests->$IP->Agent = $Agent;
-      $Guests->$IP->ID = $data->MaxID;
+      $Guests->$IP->ID    = $data->MaxID;
     } else {
       if ($Guests->$IP->Agent === $Agent && $Guests->$IP->ID < $data->MaxID - 3) {
-        $result = true;
+        $result            = true;
         $Guests->$IP->Time = time();
-        $Guests->$IP->ID = $data->MaxID + 3;
+        $Guests->$IP->ID   = $data->MaxID + 2;
       }
     }
     $file = UA_JSON::FilePath();
