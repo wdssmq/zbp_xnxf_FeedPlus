@@ -14,6 +14,7 @@ function ActivePlugin_xnxf_FeedPlus()
 }
 function FeedPlus_AddToFeed(&$Posts)
 {
+  global $zbp;
   $DataDB        = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
   $DataDB->Posts = (array) $DataDB->Posts;
   foreach ($DataDB->Posts as $k => $v) {
@@ -28,6 +29,34 @@ function FeedPlus_AddToFeed(&$Posts)
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $Posts[]       = $Post;
   }
+  $FP_CFG     = $zbp->Config('FeedPlus');
+  $PushKey = $FP_CFG->PushKey;
+  $PubWord = $FP_CFG->PubWord;
+  $PubWord = str_replace("#","",$PubWord);
+  $PriFeed = $FP_CFG->PriFeed;
+  $PriKey = GetVars("PriKey","GET");
+  // echo $PriFeed;
+  // echo "<br />";
+  // echo $zbp->feedurl . "?PriKey=" . $PriKey;
+  if ($PushKey == "" || $PubWord == "")
+    return null;
+  $http_post  = Network::Create();
+  $http_post->open('GET', 'https://api.pushbullet.com/v2/pushes?active=true');
+  $http_post->setRequestHeader('Authorization', 'Basic ' . base64_encode($PushKey . ':' . $PushKey));
+  $http_post->send();
+  $objData = json_decode($http_post->responseText);
+  foreach ($objData->pushes as $item) {
+    $Post    = new FeedPlus_Article();
+    $Post->Title   = isset($item->title) ? $item->title : substr($item->body,0,24);
+    $Post->Url      = isset($item->url) ? $item->url : $zbp->feedurl . "?redirect=" . time();
+    $Post->Content  = isset($item->body) ? $item->body : $item->title;
+    $Post->Content  .= isset($item->url) ? '<p>点击查看：<a href="'.$item->url.'">'.$item->url.'</a></p>' : "";
+    $Post->PostTime = isset($item->created) ? $item->created : "";
+    if(strpos($Post->Content,$PubWord) !== false || $PriFeed === $zbp->feedurl . "?PriKey=" . $PriKey)
+      $Posts[]        = $Post;
+  }
+  if(GetVars("redirect","GET") !== null)
+    Redirect301($zbp->host);
   return null;
 }
 function FeedPlus_AddMenu(&$m)
@@ -38,6 +67,8 @@ function FeedPlus_AddMenu(&$m)
 function FeedPlus_Rewrite($url)
 {
   global $zbp;
+  if ($zbp->option['ZC_STATIC_MODE'] == 'ACTIVE')
+    return null;
   $url       = trim(urldecode($url), '/');
   $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
   $LuckyCFG =& $LuckyData->Lucky;
@@ -113,7 +144,7 @@ function FeedPlus_GetLucky(&$hash = "")
   $Post->Url      = str_replace("{%PageID%}", $LuckyCFG->PageID, $Post->Url);
   $Post->Content  = str_replace("{%code%}", $code, $LuckyCFG->Content);
   $Post->Content  = str_replace("{%url%}", $Post->Url, $Post->Content);
-  $Post->Content  = str_replace("{%feed%}", $zbp->host . "feed.php", $Post->Content);
+  $Post->Content  = str_replace("{%feed%}", $zbp->feedurl, $Post->Content);
   $Post->PostTime = $LuckyCFG->Time;
   return $Post;
 }
@@ -131,7 +162,7 @@ function FeedPlus_Get()
 {
   global $article;
   global $xnxf_link;
-  if (isset($_GET['type']) && $_GET['type'] == "Feed") {
+  if (GetVars("type", "GET") == "Feed") {
     if (isset($_GET['id'])) {
       $DataDB            = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
       $DataDB->Posts     = (array) $DataDB->Posts;
@@ -207,6 +238,12 @@ function FeedPlus_Path($path)
 }
 function InstallPlugin_xnxf_FeedPlus()
 {
+  global $zbp;
+  if (!$zbp->HasConfig('FeedPlus')) {
+    $zbp->Config('FeedPlus')->PushKey  = '';
+    $zbp->Config('FeedPlus')->PriFeed = $zbp->feedurl . "?PriKey=" . md5(time());
+    $zbp->SaveConfig('FeedPlus');
+  }
   if (!is_file(FeedPlus_Path('PostDB'))) {
     @mkdir(dirname(FeedPlus_Path('PostDB')), 0755);
     $DataDB = new FeedPlus_Posts();

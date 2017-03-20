@@ -10,11 +10,14 @@ $blogtitle='xnxf_FeedPlus';
 require $blogpath . 'zb_system/admin/admin_header.php';
 require $blogpath . 'zb_system/admin/admin_top.php';
 InstallPlugin_xnxf_FeedPlus();
-$ddf = array("m-now","");
+$ddf = array("","","");
 $act = GetVars("act","GET");
 if ($act=="lucky"){
-  $ddf[0] = "";
   $ddf[1] = "m-now";
+} elseif($act=="pushbullet"){
+  $ddf[2] = "m-now";
+}else{
+  $ddf[0] = "m-now";
 }
 
 $strHash = "gfg";
@@ -30,33 +33,33 @@ width:96%;
 </style>
 <div id="divMain">
   <div class="divHeader"><?php echo $blogtitle;?></div>
-  <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a></div>
+  <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a><a href="main.php?act=pushbul"><span class="m-left <?php echo $ddf[2] ?>">PushBullet</span></a></div>
   <div id="divMain2">
-<?php if($act=="lucky" || $act=="save") { ?>
+<?php if($act=="lucky" || $act=="lucky-save") { ?>
 <?php
 $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
 $LuckyCFG =& $LuckyData->Lucky;
 $strCodes = join("\n", $LuckyData->Codes);
-if ($act == "save") {
+if ($act == "lucky-save") {
   if ($LuckyCFG->Time < time()) {
     $LuckyCFG->Time = time() + 1877;
   }
   $LuckyCFG->PageID  = trim(GetVars("edtPageID", "POST"));
-  $LuckyCFG->Title   = GetVars("edtTitle", "POST");
+  $LuckyCFG->Title   = trim(GetVars("edtTitle", "POST"));
   $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
-  $LuckyCFG->Content = GetVars("txaContent", "POST");
-  $strCodes          = str_replace("\r\n", "\n", GetVars("txaCodes", "POST"));
+  $LuckyCFG->Content = trim(GetVars("txaContent", "POST"));
+  $strCodes          = str_replace("\r\n", "\n", trim(GetVars("txaCodes", "POST")));
   $LuckyData->Codes  = explode("\n", $strCodes);
   file_put_contents(FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
   $zbp->SetHint('good');
   Redirect("main.php?act=lucky");
 }
 ?>
-    <form action="main.php?act=save" method="post">
+    <form action="main.php?act=lucky-save" method="post">
     <table width="100%">
       <tr>
         <th width="7%">项目</th>
-        <th width="30%">内容</th>
+        <th width="45%">内容</th>
         <th>备注</th>
       </tr>
       <tr>
@@ -74,12 +77,12 @@ if ($act == "save") {
         <td><input type="text" name="edtLink" id="edtLink" value="<?php echo $LuckyCFG->Link ;?>" /></td>
         <td>
           <p>
-            <label onclick="$('#edtLink').val(this.innerText);">
+            <label onclick="$('#edtLink').val(this.innerText.trim());">
             <input type="radio" name="radioLink" />          {%host%}?id={%PageID%}&hash={%hash%}&rewrite=1
             </label>
           </p>
           <p>
-            <label onclick="$('#edtLink').val(this.innerText);">
+            <label onclick="$('#edtLink').val(this.innerText.trim());">
             <input type="radio" name="radioLink" />
             {%host%}lucky/{%hash%}.html
             </label>
@@ -99,6 +102,56 @@ if ($act == "save") {
       </tr>
     </table>
     </form>
+<?php }elseif($act=="pushbul" || $act=="pushbul-save") { ?>
+<?php
+if ($act == "pushbul-save") {
+  $PushKey = trim(GetVars("PushKey", "POST"));
+  $http_post  = Network::Create();
+  $http_post->open('GET', 'https://api.pushbullet.com/v2/users/me');
+  $http_post->setRequestHeader('Authorization', 'Basic ' . base64_encode($PushKey . ':' . $PushKey));
+  $http_post->send();
+  $objData = json_decode($http_post->responseText, true);
+  if (!isset($objData['name']) || isset($result['error'])) {
+    $PushKey = "";
+    $zbp->SetHint('bad', 'Access Token 无效或网络不可用');
+  }
+  $zbp->Config('FeedPlus')->PushKey = $PushKey;
+  $zbp->Config('FeedPlus')->PubWord = trim(GetVars("PubWord","POST"));
+  if (GetVars("PriReset", "POST") === "true")
+    $zbp->Config('FeedPlus')->PriFeed = $zbp->feedurl . "?PriKey=" . md5(date("Ymdh") . GetVars("PushKey", "POST"));
+  $zbp->SaveConfig('FeedPlus');
+  $zbp->SetHint('good');
+  Redirect("main.php?act=pushbul");
+}
+?>
+    <form id="FP-form" action="main.php?act=pushbul-save" method="post">
+    <table width="100%">
+      <tr>
+        <th width="10%">项目</th>
+        <th width="45%">内容</th>
+        <th>备注</th>
+      </tr>
+      <tr>
+        <td>Access Token</td>
+        <td><input id="PushKey" name="PushKey" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PushKey;?>" /></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>公开关键词</td>
+        <td><input id="PubWord" name="PubWord" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PubWord;?>" placeholder="#FeedPlus#" /></td>
+        <td>含有该关键词的信息将输出到RSS中；</td>
+      </tr>
+      <tr>
+        <td>自用RSS</td>
+        <td><input id="PriFeed" name="PriFeed" style="width:95%;" onblur="this.value='<?php echo $zbp->Config('FeedPlus')->PriFeed;?>'" type="text" value="<?php echo $zbp->Config('FeedPlus')->PriFeed;?>" onmouseover="this.select();" onclick="that = this;setTimeout(function(){that.select()},150);"/><input id="PriReset" name="PriReset" type="hidden" value="false" /></td>
+        <td>私用Read it later <a href="javascript:;" onclick="$('#PriReset').val('true');$('#FP-form').submit()">生成新地址</a></td>
+      </tr>
+      <tr>
+        <td colspan="3"><input type="submit" value="提交" /></td>
+      </tr>
+    </table>
+    </form>
+
 <?php }else{?>
     <table width="100%">
     <tbody>
