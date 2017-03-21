@@ -21,9 +21,9 @@
 <adapted>151626</adapted>
 <version>0.4</version>
 <pubdate>2016-07-25</pubdate>
-<modified>2017-03-08</modified>
+<modified>2017-03-20</modified>
 <price>10.24</price>
-<phpver>5.2</phpver>
+<phpver>5.4</phpver>
 <advanced>
   <dependency>BetterFeed</dependency>
   <rewritefunctions></rewritefunctions>
