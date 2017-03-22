@@ -29,33 +29,30 @@ function FeedPlus_AddToFeed(&$Posts)
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $Posts[]       = $Post;
   }
-  $FP_CFG     = $zbp->Config('FeedPlus');
+  $FP_CFG  = $zbp->Config('FeedPlus');
   $PushKey = $FP_CFG->PushKey;
-  $PubWord = $FP_CFG->PubWord;
-  $PubWord = str_replace("#","",$PubWord);
+  $PubWord = str_replace("#", "", $FP_CFG->PubWord);
   $PriFeed = $FP_CFG->PriFeed;
-  $PriKey = GetVars("PriKey","GET");
-  // echo $PriFeed;
-  // echo "<br />";
-  // echo $zbp->feedurl . "?PriKey=" . $PriKey;
+  $PriKey  = GetVars("PriKey", "GET");
   if ($PushKey == "" || $PubWord == "")
     return null;
-  $http_post  = Network::Create();
+  $http_post = Network::Create();
   $http_post->open('GET', 'https://api.pushbullet.com/v2/pushes?active=true');
   $http_post->setRequestHeader('Authorization', 'Basic ' . base64_encode($PushKey . ':' . $PushKey));
   $http_post->send();
   $objData = json_decode($http_post->responseText);
   foreach ($objData->pushes as $item) {
-    $Post    = new FeedPlus_Article();
-    $Post->Title   = isset($item->title) ? $item->title : substr($item->body,0,24);
-    $Post->Url      = isset($item->url) ? $item->url : $zbp->feedurl . "?redirect=" . time();
-    $Post->Content  = isset($item->body) ? $item->body : $item->title;
-    $Post->Content  .= isset($item->url) ? '<p>点击查看：<a href="'.$item->url.'">'.$item->url.'</a></p>' : "";
+    $Post          = new FeedPlus_Article();
+    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : substr($item->body, 0, 24));
+    $Post->Url     = isset($item->url) ? $item->url : (isset($item->image_url) ? $item->image_url : $zbp->feedurl . "?redirect=" . time());
+    $Post->Content = isset($item->body) ? $item->body : $Post->Title;
+    $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
+    $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
     $Post->PostTime = isset($item->created) ? $item->created : "";
-    if(strpos($Post->Content,$PubWord) !== false || $PriFeed === $zbp->feedurl . "?PriKey=" . $PriKey)
-      $Posts[]        = $Post;
+    if (strpos($Post->Content, $PubWord) !== false || $PriFeed === $zbp->feedurl . "?PriKey=" . $PriKey)
+      $Posts[] = $Post;
   }
-  if(GetVars("redirect","GET") !== null)
+  if (GetVars("redirect", "GET") !== null)
     Redirect301($zbp->host);
   return null;
 }
@@ -240,7 +237,7 @@ function InstallPlugin_xnxf_FeedPlus()
 {
   global $zbp;
   if (!$zbp->HasConfig('FeedPlus')) {
-    $zbp->Config('FeedPlus')->PushKey  = '';
+    $zbp->Config('FeedPlus')->PushKey = '';
     $zbp->Config('FeedPlus')->PriFeed = $zbp->feedurl . "?PriKey=" . md5(time());
     $zbp->SaveConfig('FeedPlus');
   }
