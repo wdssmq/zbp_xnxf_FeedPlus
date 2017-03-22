@@ -41,13 +41,16 @@ function FeedPlus_AddToFeed(&$Posts)
   $http_post->setRequestHeader('Authorization', 'Basic ' . base64_encode($PushKey . ':' . $PushKey));
   $http_post->send();
   $objData = json_decode($http_post->responseText);
+  // var_dump($objData);
+  // die();
   foreach ($objData->pushes as $item) {
     $Post          = new FeedPlus_Article();
     $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : substr($item->body, 0, 24));
-    $Post->Url     = isset($item->url) ? $item->url : (isset($item->image_url) ? $item->image_url : $zbp->feedurl . "?redirect=" . time());
+    $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . time());
     $Post->Content = isset($item->body) ? $item->body : $Post->Title;
     $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
+    $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
     $Post->PostTime = isset($item->created) ? $item->created : "";
     if (strpos($Post->Content, $PubWord) !== false || $PriFeed === $zbp->feedurl . "?PriKey=" . $PriKey)
       $Posts[] = $Post;
