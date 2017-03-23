@@ -15,6 +15,8 @@ function ActivePlugin_xnxf_FeedPlus()
 function FeedPlus_AddToFeed(&$Posts)
 {
   global $zbp;
+  if (GetVars("redirect", "GET") !== null)
+    Redirect301($zbp->host);
   $DataDB        = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
   $DataDB->Posts = (array) $DataDB->Posts;
   foreach ($DataDB->Posts as $k => $v) {
@@ -31,7 +33,7 @@ function FeedPlus_AddToFeed(&$Posts)
   }
   $FP_CFG  = $zbp->Config('FeedPlus');
   $PushKey = $FP_CFG->PushKey;
-  $PubWord = str_replace("#", "", $FP_CFG->PubWord);
+  $PubWord = $FP_CFG->PubWord;
   $PriFeed = $FP_CFG->PriFeed;
   $PriKey  = GetVars("PriKey", "GET");
   if ($PushKey == "" || $PubWord == "")
@@ -46,17 +48,15 @@ function FeedPlus_AddToFeed(&$Posts)
   foreach ($objData->pushes as $item) {
     $Post          = new FeedPlus_Article();
     $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : substr($item->body, 0, 24));
-    $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . time());
+    $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
     $Post->Content = isset($item->body) ? $item->body : $Post->Title;
     $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
     $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
-    $Post->PostTime = isset($item->created) ? $item->created : "";
+    $Post->PostTime = $item->created;
     if (strpos($Post->Content, $PubWord) !== false || $PriFeed === $zbp->feedurl . "?PriKey=" . $PriKey)
       $Posts[] = $Post;
   }
-  if (GetVars("redirect", "GET") !== null)
-    Redirect301($zbp->host);
   return null;
 }
 function FeedPlus_AddMenu(&$m)
@@ -240,7 +240,8 @@ function InstallPlugin_xnxf_FeedPlus()
 {
   global $zbp;
   if (!$zbp->HasConfig('FeedPlus')) {
-    $zbp->Config('FeedPlus')->PushKey = '';
+    $zbp->Config('FeedPlus')->PushKey = "";
+    $zbp->Config('FeedPlus')->PubWord = "#PubWord#";
     $zbp->Config('FeedPlus')->PriFeed = $zbp->feedurl . "?PriKey=" . md5(time());
     $zbp->SaveConfig('FeedPlus');
   }

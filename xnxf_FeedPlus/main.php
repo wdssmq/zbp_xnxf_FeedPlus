@@ -14,7 +14,7 @@ $ddf = array("","","");
 $act = GetVars("act","GET");
 if ($act=="lucky"){
   $ddf[1] = "m-now";
-} elseif($act=="pushbullet"){
+} elseif($act=="pushbul"){
   $ddf[2] = "m-now";
 }else{
   $ddf[0] = "m-now";
@@ -133,12 +133,12 @@ if ($act == "pushbul-save") {
       </tr>
       <tr>
         <td>Access Token</td>
-        <td><input id="PushKey" name="PushKey" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PushKey;?>" /></td>
+        <td><input id="PushKey" name="PushKey" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PushKey;?>" onmouseover="this.select();"></td>
         <td></td>
       </tr>
       <tr>
         <td>公开关键词</td>
-        <td><input id="PubWord" name="PubWord" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PubWord;?>" placeholder="#FeedPlus#" /></td>
+        <td><input id="PubWord" name="PubWord" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PubWord;?>" placeholder="#PubWord#"onmouseover="this.select();" /></td>
         <td>含有该关键词的信息将输出到RSS中；</td>
       </tr>
       <tr>
