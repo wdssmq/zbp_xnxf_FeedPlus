@@ -33,11 +33,21 @@ function FeedPlus_AddToFeed(&$Posts)
   }
   $FP_CFG  = $zbp->Config('FeedPlus');
   $PushKey = $FP_CFG->PushKey;
-  $PubWord = $FP_CFG->PubWord;
-  $PriFeed = $FP_CFG->PriFeed;
-  $PriKey  = GetVars("PriKey", "GET");
-  if ($PushKey == "" || $PubWord == "")
+  if ($PushKey == "")
     return null;
+  $PubWord = $FP_CFG->PubWord;
+  $PriKey  = GetVars("PriKey", "GET");
+  $PriFeed = $FP_CFG->PriFeed;
+  if ($PriFeed === $PriKey) {
+    $PubWord = "65537";
+  } else if ($PriKey != null) {
+    $Post        = new FeedPlus_Article();
+    $Post->Title = "PriKey已失效" . date("Ymd");
+    $Post->Url   = FeedPlus_Path("Main", "host") . '?act=pushbul&date=' . date("Ymd");
+    $Post->Content .= '--<a href="' . $Post->Url . '">点击这里重新获取</a>--';
+    $Post->PostTime = time();
+    $Posts[]        = $Post;
+  }
   $http_post = Network::Create();
   $http_post->open('GET', 'https://api.pushbullet.com/v2/pushes?active=true');
   $http_post->setRequestHeader('Authorization', 'Basic ' . base64_encode($PushKey . ':' . $PushKey));
@@ -54,7 +64,7 @@ function FeedPlus_AddToFeed(&$Posts)
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
     $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
     $Post->PostTime = $item->created;
-    if (strpos($Post->Content, $PubWord) !== false || $PriFeed === $zbp->feedurl . "?PriKey=" . $PriKey)
+    if ($PubWord === "65537" || strpos($Post->Content, $PubWord) !== false)
       $Posts[] = $Post;
   }
   return null;
@@ -150,7 +160,7 @@ function FeedPlus_GetLucky(&$hash = "")
 }
 function FeedPlus_Edit()
 {
-  echo "<script src='" . FeedPlus_Path("Script") . "' type='text/javascript'></script>";
+  echo "<script src='" . FeedPlus_Path("Script", "host") . "' type='text/javascript'></script>";
 }
 function FeedPlus_Edit_Link()
 {
@@ -208,32 +218,31 @@ function FeedPlus_Post($article)
     Redirect(FeedPlus_Path("Main"));
   }
 }
-function FeedPlus_Path($path)
+function FeedPlus_Path($file, $t = "path")
 {
   global $zbp;
-  $MyPath = $zbp->path . "zb_users/plugin/xnxf_FeedPlus/";
-  $MyHost = $zbp->host . "zb_users/plugin/xnxf_FeedPlus/";
-  switch ($path) {
+  $result = $zbp->$t . "zb_users/plugin/xnxf_FeedPlus/";
+  switch ($file) {
     case "Log":
-      return $MyPath . "cache/Log.json";
+      return $result . "cache/Log.json";
       break;
     case "PostDB":
-      return $MyPath . "db/Posts.json";
+      return $result . "db/Posts.json";
       break;
     case "LuckyDB":
-      return $MyPath . "db/#%20" . $zbp->guid . ".json";
+      return $result . "db/#%20" . $zbp->guid . ".json";
       break;
     case "IndexDB":
-      return $MyPath . "db/index.html";
+      return $result . "db/index.html";
       break;
     case "Script":
-      return $MyHost . "source/script.js";
+      return $result . "source/script.js";
       break;
     case "Main":
-      return $MyHost . "main.php";
+      return $result . "main.php";
       break;
     default:
-      // $fname = $this->dir . "post/" . $name . ".html";
+      return $result;
   }
 }
 function InstallPlugin_xnxf_FeedPlus()
