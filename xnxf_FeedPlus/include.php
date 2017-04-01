@@ -16,7 +16,7 @@ function FeedPlus_AddToFeed(&$Posts)
 {
   global $zbp;
   if (GetVars("redirect", "GET") !== null)
-    Redirect301($zbp->host);
+    Redirect301($zbp->feedurl);
   $DataDB        = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
   $DataDB->Posts = (array) $DataDB->Posts;
   foreach ($DataDB->Posts as $k => $v) {
@@ -56,15 +56,24 @@ function FeedPlus_AddToFeed(&$Posts)
   // var_dump($objData);
   // die();
   foreach ($objData->pushes as $item) {
+    $PubThis = false;
     $Post          = new FeedPlus_Article();
-    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : substr($item->body, 0, 24));
+    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : SubStrUTF8($item->body,36));
     $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
-    $Post->Content = isset($item->body) ? $item->body : $Post->Title;
-    $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
+    $Post->Content = trim(isset($item->body) ? $item->body : $Post->Title);
+    if ($Post->Content == $PubWord)
+      $Post->Content = $Post->Title . $Post->Content;
+    if (strpos($Post->Content, $PubWord) !== false){
+      $Post->Title   = str_replace($PubWord,"",$Post->Title) . " - $PubWord";
+      $Post->Content   = str_replace($PubWord,"",$Post->Content) . " - $PubWord";
+      $PubThis = true;
+    }
+      
+    // $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
-    $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
+    // $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
     $Post->PostTime = $item->created;
-    if ($PubWord === "65537" || strpos($Post->Content, $PubWord) !== false)
+    if ($PubWord === "65537" || $PubThis)
       $Posts[] = $Post;
   }
   return null;
