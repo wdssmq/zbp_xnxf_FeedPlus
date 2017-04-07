@@ -39,7 +39,7 @@ function FeedPlus_AddToFeed(&$Posts)
   $PriKey  = GetVars("PriKey", "GET");
   $PriFeed = $FP_CFG->PriFeed;
   if ($PriFeed === $PriKey) {
-    $PubWord = "65537";
+    $PriKey = "65537";
   } else if ($PriKey != null) {
     $Post        = new FeedPlus_Article();
     $Post->Title = "PriKey已失效" . date("Ymd");
@@ -58,7 +58,7 @@ function FeedPlus_AddToFeed(&$Posts)
   foreach ($objData->pushes as $item) {
     $PubThis = false;
     $Post          = new FeedPlus_Article();
-    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : SubStrUTF8($item->body,36));
+    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : SubStrUTF8($item->body,77));
     $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
     $Post->Content = trim(isset($item->body) ? $item->body : $Post->Title);
     if ($Post->Content == $PubWord)
@@ -73,7 +73,7 @@ function FeedPlus_AddToFeed(&$Posts)
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
     // $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
     $Post->PostTime = $item->created;
-    if ($PubWord === "65537" || $PubThis)
+    if ($PriKey === "65537" || $PubThis)
       $Posts[] = $Post;
   }
   return null;
