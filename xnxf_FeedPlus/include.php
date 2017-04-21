@@ -54,6 +54,7 @@ function FeedPlus_AddToFeed(&$Posts)
   $http_post->send();
   $objData = json_decode($http_post->responseText);
   // var_dump($objData);
+  // echo $http_post->responseText;
   // die();
   foreach ($objData->pushes as $item) {
     $PubThis = false;
@@ -260,7 +261,7 @@ function InstallPlugin_xnxf_FeedPlus()
   if (!$zbp->HasConfig('FeedPlus')) {
     $zbp->Config('FeedPlus')->PushKey = "";
     $zbp->Config('FeedPlus')->PubWord = "#PubWord#";
-    $zbp->Config('FeedPlus')->PriFeed = $zbp->feedurl . "?PriKey=" . md5(time());
+    $zbp->Config('FeedPlus')->PriFeed = md5(time());
     $zbp->SaveConfig('FeedPlus');
   }
   if (!is_file(FeedPlus_Path('PostDB'))) {

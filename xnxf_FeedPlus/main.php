@@ -33,7 +33,7 @@ width:96%;
 </style>
 <div id="divMain">
   <div class="divHeader"><?php echo $blogtitle;?></div>
-  <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=pushbul"><span class="m-left <?php echo $ddf[2] ?>">PushBullet</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a></div>
+  <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=pushbul"><span class="m-left <?php echo $ddf[2] ?>">PushBullet</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a><?php require "about.php"?></div>
   <div id="divMain2">
 <?php if($act=="lucky" || $act=="lucky-save") { ?>
 <?php
@@ -114,14 +114,15 @@ if ($act == "pushbul-save") {
   if (!isset($objData['name']) || isset($result['error'])) {
     $PushKey = "";
     $zbp->SetHint('bad', 'Access Token 无效或网络不可用');
+  }else{
+    $zbp->SetHint('good');
   }
   $zbp->Config('FeedPlus')->PushKey = $PushKey;
   $zbp->Config('FeedPlus')->PubWord = trim(GetVars("PubWord","POST"));
   if (GetVars("PriReset", "POST") === "true")
     $zbp->Config('FeedPlus')->PriFeed = md5(date("Ymdh") . GetVars("PushKey", "POST"));
   $zbp->SaveConfig('FeedPlus');
-  $zbp->SetHint('good');
-  Redirect("main.php?act=pushbul");
+  // Redirect("main.php?act=pushbul");
 }
 ?>
     <form id="FP-form" action="main.php?act=pushbul-save" method="post">
@@ -138,7 +139,7 @@ if ($act == "pushbul-save") {
       </tr>
       <tr>
         <td>公开关键词</td>
-        <td><input id="PubWord" name="PubWord" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PubWord;?>" placeholder="#PubWord#"onmouseover="this.select();" onblur="if(this.value=='') this.value='#PubWord#'" onfocus="if(this.value=='#PubWord#') this.value=''" value="#PubWord#" /></td>
+        <td><input id="PubWord" name="PubWord" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PubWord;?>" placeholder="#PubWord#" onmouseover="this.select();" onblur="if(this.value=='') this.value='#PubWord#'" onfocus="if(this.value=='#PubWord#') this.value=''"/></td>
         <td>含有该关键词的信息将输出到RSS中；</td>
       </tr>
       <tr>
@@ -151,7 +152,6 @@ if ($act == "pushbul-save") {
       </tr>
     </table>
     </form>
-
 <?php }else{?>
     <table width="100%">
     <tbody>
@@ -189,7 +189,6 @@ if (is_file(FeedPlus_Path("PostDB"))){
 <?php } ?>
   </div>
 </div>
-
 <?php
 require $blogpath . 'zb_system/admin/admin_footer.php';
 RunTime();
