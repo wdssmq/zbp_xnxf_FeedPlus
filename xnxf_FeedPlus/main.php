@@ -26,6 +26,7 @@ $LuckyUrl = $Post == null ? "" : $Post->Url;
 InstallPlugin_xnxf_FeedPlus();
 UA_JSON::Del();
 ?>
+<script type="text/javascript" src="http://test.wdssmq.com/zbp/zb_users/plugin/xnxf_FeedPlus/MARKDOWN_IF_NEEDED.user.js"></script>
 <style type="text/css">
 td > input[type="text"]{
 width:96%;
@@ -78,24 +79,25 @@ if ($act == "lucky-save") {
         <td>
           <p>
             <label onclick="$('#edtLink').val(this.innerText.trim());">
-            <input type="radio" name="radioLink" />          {%host%}?id={%PageID%}&hash={%hash%}&rewrite=1
+            <input type="radio" name="radioLink" />
+              {%host%}?id={%PageID%}&hash={%hash%}&rewrite=1
             </label>
           </p>
           <p>
             <label onclick="$('#edtLink').val(this.innerText.trim());">
             <input type="radio" name="radioLink" />
-            {%host%}lucky/{%hash%}.html
+              {%host%}lucky/{%hash%}.html
             </label>
           </p>
           <p>{%hash%}值自动生成且每天一换；验证无效时会301到绑定的页面网址；</p>
         </td>
       </tr>
       <tr>
-        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><textarea name="txaContent" id="txaContent" cols="67" rows="13"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
+        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed">点击安装<code>markdown-if-needed</code>脚本</a> 即可使用MD语法并在这里显示工具条</p><div style="clear:both"></div><textarea class="md-needed" name="txaContent" id="txaContent" cols="67" rows="13"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
         <td><p><label for="txaContent">福利码（一行一条,*表示已经被查看过，不影响再次显示）：</label></p><textarea name="txaCodes" id="txaCodes" cols="67" rows="13"><?php echo $strCodes; ?></textarea></td>
       </tr>
       <tr>
-        <td colspan="3"><input type="submit" value="提交" /></td>
+        <td colspan="3"><input class="md-submit" type="submit" value="提交" /></td>
       </tr>
       <tr>
         <td colspan="3"><p>说明：</p><p>1、正文可用标签：{%code%}、{%host%}、{%feed%}、{%url%}；<br />2、在“链接”指向页面中，会按天提取一条福利码替换掉正文中的{%code%}显示（RSS中会替换成提示信息）；<br />3、当有新文章更新时才会触发RSS的生成</p></td>
