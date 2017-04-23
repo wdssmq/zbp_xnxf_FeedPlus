@@ -6,7 +6,7 @@ $action='root';
 if (!$zbp->CheckRights($action)) {$zbp->ShowError(6);die();}
 if (!$zbp->CheckPlugin('xnxf_FeedPlus')) {$zbp->ShowError(48);die();}
 
-$blogtitle='xnxf_FeedPlus';
+$blogtitle='FeedPlus';
 require $blogpath . 'zb_system/admin/admin_header.php';
 require $blogpath . 'zb_system/admin/admin_top.php';
 InstallPlugin_xnxf_FeedPlus();
