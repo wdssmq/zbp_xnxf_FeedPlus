@@ -20,7 +20,7 @@ if ($act=="lucky"){
   $ddf[0] = "m-now";
 }
 
-$strHash = "gfg";
+$strHash = "65537";
 $Post =  FeedPlus_GetLucky($strHash);
 $LuckyUrl = $Post == null ? "" : $Post->Url;
 InstallPlugin_xnxf_FeedPlus();
@@ -100,7 +100,7 @@ if ($act == "lucky-save") {
         <td colspan="3"><input class="md-submit" type="submit" value="提交" /></td>
       </tr>
       <tr>
-        <td colspan="3"><p>说明：</p><p>1、正文可用标签：{%code%}、{%host%}、{%feed%}、{%url%}；<br />2、在“链接”指向页面中，会按天提取一条福利码替换掉正文中的{%code%}显示（RSS中会替换成提示信息）；<br />3、当有新文章更新时才会触发RSS的生成</p></td>
+        <td colspan="3"><p>说明：</p><p>1、正文可用标签：{%code%}、{%host%}、{%feed%}、{%url%}；</p><p>2、在“链接”指向页面中，会按天提取一条福利码替换掉正文中的{%code%}显示（RSS中会替换成提示信息）；</p><p>3、将某行用双短线 -- 占位则可跳过当天的显示，从而实现每隔N天提取一条显示；</p><p>4、提取的起点很可能不是第一条！</p></td>
       </tr>
     </table>
     </form>
@@ -124,7 +124,7 @@ if ($act == "pushbul-save") {
   if (GetVars("PriReset", "POST") === "true")
     $zbp->Config('FeedPlus')->PriFeed = md5(date("Ymdh") . GetVars("PushKey", "POST"));
   $zbp->SaveConfig('FeedPlus');
-  // Redirect("main.php?act=pushbul");
+  Redirect("main.php?act=pushbul");
 }
 ?>
     <form id="FP-form" action="main.php?act=pushbul-save" method="post">

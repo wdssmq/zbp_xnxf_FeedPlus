@@ -59,7 +59,7 @@ function FeedPlus_AddToFeed(&$Posts)
   foreach ($objData->pushes as $item) {
     $PubThis = false;
     $Post          = new FeedPlus_Article();
-    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : SubStrUTF8($item->body,77));
+    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : $item->body);
     $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
     $Post->Content = trim(isset($item->body) ? $item->body : $Post->Title);
     if ($Post->Content == $PubWord)
@@ -69,7 +69,10 @@ function FeedPlus_AddToFeed(&$Posts)
       $Post->Content   = str_replace($PubWord,"",$Post->Content) . " - $PubWord";
       $PubThis = true;
     }
-      
+    if ($Post->Title !== $Post->Content && strpos($Post->Content,SubStrUTF8($Post->Title,27)) == false)
+      $Post->Content = SubStrUTF8($Post->Title,27) . "</p><p>". $Post->Content;
+    $Post->Title = SubStrUTF8($Post->Title,77);
+    $Post->Content = "<p>" . $Post->Content . "</p>";
     // $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
     // $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
@@ -141,14 +144,14 @@ function FeedPlus_GetLucky(&$hash = "")
   $NumsDays = floor((time() + $LuckyCFG->Time) / 86400);
   $strHash  = substr(base_convert($NumsDays * $LuckyCFG->Time, 10, 36), -6);
   $index    = $NumsDays % count($LuckyData->Codes);
-  $code     = $LuckyData->Codes[$index];
+  $code     = trim($LuckyData->Codes[$index]);
   if (strpos($code, "*") !== false) {
     $arrCode = explode("*", $code);
     if ($arrCode[1] !== (string) $NumsDays && $hash !== $strHash)
       return null;
     $code = $arrCode[0];
   }
-  if ($code == "")
+  if ($code === "" || $code == "--")
     return null;
   if ($hash !== $strHash) {
     $hash = $strHash;
@@ -225,7 +228,7 @@ function FeedPlus_Post($article)
     $zbp->BuildModule();
     $zbp->SaveCache();
     $zbp->SetHint('good');
-    Redirect(FeedPlus_Path("Main"));
+    Redirect(FeedPlus_Path("Main","host"));
   }
 }
 function FeedPlus_Path($file, $t = "path")
