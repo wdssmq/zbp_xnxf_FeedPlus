@@ -77,7 +77,7 @@ if ($act == "lucky-save") {
         <td><label for="edtLink">链接模式：</label></td>
         <td><input type="text" name="edtLink" id="edtLink" value="<?php echo $LuckyCFG->Link ;?>" /></td>
         <td>
-          <p>
+          <!--<p>
             <label onclick="$('#edtLink').val(this.innerText.trim());">
             <input type="radio" name="radioLink" />
               {%host%}?id={%PageID%}&hash={%hash%}&rewrite=1
@@ -88,7 +88,7 @@ if ($act == "lucky-save") {
             <input type="radio" name="radioLink" />
               {%host%}lucky/{%hash%}.html
             </label>
-          </p>
+          </p>-->
           <p>{%hash%}值自动生成且每天一换；验证无效时会301到绑定的页面网址；</p>
         </td>
       </tr>
@@ -100,7 +100,7 @@ if ($act == "lucky-save") {
         <td colspan="3"><input class="md-submit" type="submit" value="提交" /></td>
       </tr>
       <tr>
-        <td colspan="3"><p>说明：</p><p>1、正文可用标签：{%code%}、{%host%}、{%feed%}、{%url%}；</p><p>2、在“链接”指向页面中，会按天提取一条福利码替换掉正文中的{%code%}显示（RSS中会替换成提示信息）；</p><p>3、将某行用双短线 -- 占位则可跳过当天的显示，从而实现每隔N天提取一条显示；</p><p>4、提取的起点很可能不是第一条！</p></td>
+        <td colspan="3"><p>说明（仍然不懂的话请点右上关于联系我）：</p><p>1、正文可用标签：{%code%}、{%host%}、{%feed%}、{%url%}；</p><p>2、在“链接”指向页面中，会按天提取一条福利码替换掉正文中的{%code%}显示（RSS中会替换成提示信息）；</p><p>3、将某行用双短线 -- 占位则可跳过当天的显示，从而实现每隔N天提取一条显示；</p><p>4、提取的起点很可能不是第一条；如果使用间隔提取则结尾也应该添加对应行数的占位符；</p><br /></td>
       </tr>
     </table>
     </form>
