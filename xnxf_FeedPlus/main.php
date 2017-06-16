@@ -93,7 +93,7 @@ if ($act == "lucky-save") {
         </td>
       </tr>
       <tr>
-        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed">点击安装<code>markdown-if-needed</code>脚本</a> 即可使用MD语法并在这里显示工具条</p><div style="clear:both"></div><textarea class="md-needed" name="txaContent" id="txaContent" cols="67" rows="13"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
+        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar" style="width: 82%;"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed">点击安装<code>markdown-if-needed</code>脚本</a> 即可使用MD语法并在这里显示工具条</p><div style="clear:both"></div><textarea class="md-needed" name="txaContent" id="txaContent" style="width: 82%;" rows="13"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
         <td><p><label for="txaContent">福利码（一行一条,*表示已经被查看过，不影响再次显示）：</label></p><textarea name="txaCodes" id="txaCodes" cols="67" rows="13"><?php echo $strCodes; ?></textarea></td>
       </tr>
       <tr>
@@ -181,7 +181,7 @@ if (is_file(FeedPlus_Path("PostDB"))){
       "<td><a href='" . $Post->Url . "' title='" . $Post->Title . "' target='_blank'>" . $Post->Url . "</a></td>" .
       "<td>" . Date("Y-m-d h:i:s", $Post->PostTime) . "</td>" .
       "<td>" . $zbp->lang['post_status_name'][$Post->Public] . "</td>" .
-      "<td align='center'><a href='" . $zbp->host . "zb_system/admin/edit.php?act=ArticleEdt&amp;type=Feed&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/page_edit.png' alt='" . $zbp->lang['msg']['edit'] . "' title='" . $zbp->lang['msg']['edit'] . "' width='16' /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick='return window.confirm(\"" . $zbp->lang['msg']['confirm_operating'] . "\");' href='" . FeedPlus_Path("Main") . "?act=FeedDel&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/delete.png' alt='" .$zbp->lang['msg']['edit'] . "' title='" .$zbp->lang['msg']['edit'] . "' width='16' /></a></td>" .
+      "<td align='center'><a href='" . $zbp->host . "zb_system/admin/edit.php?act=ArticleEdt&amp;type=Feed&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/page_edit.png' alt='" . $zbp->lang['msg']['edit'] . "' title='" . $zbp->lang['msg']['edit'] . "' width='16' /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick='return window.confirm(\"" . $zbp->lang['msg']['confirm_operating'] . "\");' href='" . FeedPlus_Path("Main","host") . "?act=FeedDel&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/delete.png' alt='" .$zbp->lang['msg']['edit'] . "' title='" .$zbp->lang['msg']['edit'] . "' width='16' /></a></td>" .
     "</tr>";
   }
 }
