@@ -77,23 +77,11 @@ if ($act == "lucky-save") {
         <td><label for="edtLink">链接模式：</label></td>
         <td><input type="text" name="edtLink" id="edtLink" value="<?php echo $LuckyCFG->Link ;?>" /></td>
         <td>
-          <!--<p>
-            <label onclick="$('#edtLink').val(this.innerText.trim());">
-            <input type="radio" name="radioLink" />
-              {%host%}?id={%PageID%}&hash={%hash%}&rewrite=1
-            </label>
-          </p>
-          <p>
-            <label onclick="$('#edtLink').val(this.innerText.trim());">
-            <input type="radio" name="radioLink" />
-              {%host%}lucky/{%hash%}.html
-            </label>
-          </p>-->
           <p>{%hash%}值自动生成且每天一换；验证无效时会301到绑定的页面网址；</p>
         </td>
       </tr>
       <tr>
-        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar" style="width: 82%;"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed">点击安装<code>markdown-if-needed</code>脚本</a> 即可使用MD语法并在这里显示工具条</p><div style="clear:both"></div><textarea class="md-needed" name="txaContent" id="txaContent" style="width: 82%;" rows="13"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
+        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed">点击安装<code>MarkDown</code>脚本</a> 即可使用MD语法并在这里显示工具条。</p><textarea class="md-needed" name="txaContent" id="txaContent" rows="13" style="width: 100%;"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
         <td><p><label for="txaContent">福利码（一行一条,*表示已经被查看过，不影响再次显示）：</label></p><textarea name="txaCodes" id="txaCodes" cols="67" rows="13"><?php echo $strCodes; ?></textarea></td>
       </tr>
       <tr>
