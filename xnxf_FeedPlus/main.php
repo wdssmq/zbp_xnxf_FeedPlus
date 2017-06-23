@@ -169,9 +169,17 @@ if (is_file(FeedPlus_Path("PostDB"))){
       "<td><a href='" . $Post->Url . "' title='" . $Post->Title . "' target='_blank'>" . $Post->Url . "</a></td>" .
       "<td>" . Date("Y-m-d h:i:s", $Post->PostTime) . "</td>" .
       "<td>" . $zbp->lang['post_status_name'][$Post->Public] . "</td>" .
-      "<td align='center'><a href='" . $zbp->host . "zb_system/admin/edit.php?act=ArticleEdt&amp;type=Feed&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/page_edit.png' alt='" . $zbp->lang['msg']['edit'] . "' title='" . $zbp->lang['msg']['edit'] . "' width='16' /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick='return window.confirm(\"" . $zbp->lang['msg']['confirm_operating'] . "\");' href='" . FeedPlus_Path("Main","host") . "?act=FeedDel&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/delete.png' alt='" .$zbp->lang['msg']['edit'] . "' title='" .$zbp->lang['msg']['edit'] . "' width='16' /></a></td>" .
+      "<td align='center'><a href='" . $zbp->host . "zb_system/admin/edit.php?act=ArticleEdt&amp;type=Feed&amp;id=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/page_edit.png' alt='" . $zbp->lang['msg']['edit'] . "' title='" . $zbp->lang['msg']['edit'] . "' width='16' /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick='return window.confirm(\"" . $zbp->lang['msg']['confirm_operating'] . "\");' href='" . FeedPlus_Path("Main","host") . "?act=FeedDel&amp;ID=" . $Post->ID . "'><img src='" . $zbp->host . "zb_system/image/admin/delete.png' alt='" .$zbp->lang['msg']['edit'] . "' title='" .$zbp->lang['msg']['edit'] . "' width='16' /></a></td>" .
     "</tr>";
   }
+}
+if ($act == "FeedDel") {
+  $FeedID = trim(GetVars("ID", "GET"));
+  unset($DataDB->Posts["ID$FeedID"]);
+  var_dump($DataDB->Posts);
+  file_put_contents(FeedPlus_Path("PostDB"),json_encode($DataDB));
+  $zbp->SetHint('good');
+  Redirect("main.php");
 }
 ?>
     </tbody>
