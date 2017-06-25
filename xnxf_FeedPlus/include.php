@@ -57,21 +57,21 @@ function FeedPlus_AddToFeed(&$Posts)
   // echo $http_post->responseText;
   // die();
   foreach ($objData->pushes as $item) {
-    $PubThis = false;
+    $PubThis       = false;
     $Post          = new FeedPlus_Article();
     $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : $item->body);
     $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
     $Post->Content = trim(isset($item->body) ? $item->body : $Post->Title);
     if ($Post->Content == $PubWord)
       $Post->Content = $Post->Title . $Post->Content;
-    if (strpos($Post->Content, $PubWord) !== false){
-      $Post->Title   = str_replace($PubWord,"",$Post->Title) . " - $PubWord";
-      $Post->Content   = str_replace($PubWord,"",$Post->Content) . " - $PubWord";
-      $PubThis = true;
+    if (strpos($Post->Content, $PubWord) !== false) {
+      $Post->Title   = str_replace($PubWord, "", $Post->Title) . " - $PubWord";
+      $Post->Content = str_replace($PubWord, "", $Post->Content) . " - $PubWord";
+      $PubThis       = true;
     }
-    if ($Post->Title !== $Post->Content && strpos($Post->Content,SubStrUTF8($Post->Title,27)) == false)
-      $Post->Content = SubStrUTF8($Post->Title,27) . "</p><p>". $Post->Content;
-    $Post->Title = SubStrUTF8($Post->Title,77);
+    if ($Post->Title !== $Post->Content && strpos($Post->Content, SubStrUTF8($Post->Title, 27)) == false)
+      $Post->Content = SubStrUTF8($Post->Title, 27) . "</p><p>" . $Post->Content;
+    $Post->Title   = SubStrUTF8($Post->Title, 77);
     $Post->Content = "<p>" . $Post->Content . "</p>";
     // $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
@@ -87,9 +87,13 @@ function FeedPlus_AddMenu(&$m)
   global $zbp;
   $m[] = MakeTopMenu("root", 'FeedPlus', $zbp->host . "zb_users/plugin/xnxf_FeedPlus/main.php", "", "FeedPlus");
 }
-function FeedPlus_Rewrite($url)
+function FeedPlus_Rewrite($inpurl)
 {
   global $zbp;
+  $url = GetValueInArray(explode('?', $inpurl), '0');
+  if ($zbp->cookiespath === substr($url, 0, strlen($zbp->cookiespath))) {
+    $url = substr($url, strlen($zbp->cookiespath));
+  }
   $url       = trim(urldecode($url), '/');
   $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
   $LuckyCFG =& $LuckyData->Lucky;
@@ -158,9 +162,9 @@ function FeedPlus_GetLucky(&$hash = "")
     $LuckyData->Codes[$index] = $code . "*" . (string) $NumsDays;
     file_put_contents(FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
   }
-  $Post           = new FeedPlus_Article();
-  $Post->Title    = $LuckyCFG->Title;
-  if ($zbp->option['ZC_STATIC_MODE'] == 'ACTIVE')
+  $Post        = new FeedPlus_Article();
+  $Post->Title = $LuckyCFG->Title;
+  if ($zbp->option['ZC_STATIC_MODE'] !== 'REWRITE')
     $LuckyCFG->Link = "{%host%}?id={%PageID%}&hash={%hash%}&rewrite=1";
   $Post->Url      = str_replace("{%host%}", $zbp->host, $LuckyCFG->Link);
   $Post->Url      = str_replace("{%hash%}", $strHash, $Post->Url);
@@ -228,7 +232,7 @@ function FeedPlus_Post($article)
     $zbp->BuildModule();
     $zbp->SaveCache();
     $zbp->SetHint('good');
-    Redirect(FeedPlus_Path("Main","host"));
+    Redirect(FeedPlus_Path("Main", "host"));
   }
 }
 function FeedPlus_Path($file, $t = "path")

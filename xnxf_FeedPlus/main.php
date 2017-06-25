@@ -47,7 +47,8 @@ if ($act == "lucky-save") {
   }
   $LuckyCFG->PageID  = trim(GetVars("edtPageID", "POST"));
   $LuckyCFG->Title   = trim(GetVars("edtTitle", "POST"));
-  $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
+  if ($zbp->option['ZC_STATIC_MODE'] == 'REWRITE')
+    $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
   $LuckyCFG->Content = trim(GetVars("txaContent", "POST"));
   $strCodes          = str_replace("\r\n", "\n", trim(GetVars("txaCodes", "POST")));
   $LuckyData->Codes  = explode("\n", $strCodes);
