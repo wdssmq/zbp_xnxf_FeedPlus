@@ -26,7 +26,6 @@ $LuckyUrl = $Post == null ? "" : $Post->Url;
 InstallPlugin_xnxf_FeedPlus();
 UA_JSON::Del();
 ?>
-<script type="text/javascript" src="http://test.wdssmq.com/zbp/zb_users/plugin/xnxf_FeedPlus/MARKDOWN_IF_NEEDED.user.js"></script>
 <style type="text/css">
 td > input[type="text"]{
 width:96%;
