@@ -9,10 +9,10 @@ function ActivePlugin_xnxf_FeedPlus()
   Add_Filter_Plugin('Filter_Plugin_Edit_Begin', 'FeedPlus_Get');
   Add_Filter_Plugin('Filter_Plugin_ViewAuto_Begin', 'FeedPlus_Rewrite');
   Add_Filter_Plugin('Filter_Plugin_ViewPost_Template', 'FeedPlus_LuckyView');
-  Add_Filter_Plugin('Filter_Plugin_BetterFeed_AddItem', 'FeedPlus_AddToFeed');
+  Add_Filter_Plugin('Filter_Plugin_ViewFeed_End', 'FeedPlus_AddToFeed');
   // Add_Filter_Plugin('Filter_Plugin_BetterFeed_AddItem', 'FeedPlus_GetLucky');
 }
-function FeedPlus_AddToFeed(&$Posts)
+function FeedPlus_AddToFeed(&$rss2)
 {
   global $zbp;
   if (GetVars("redirect", "GET") !== null)
@@ -22,14 +22,14 @@ function FeedPlus_AddToFeed(&$Posts)
   foreach ($DataDB->Posts as $k => $v) {
     $Post = json_decode($v);
     if ($Post->Public == 0) {
-      $Posts[] = $Post;
+      $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
     }
   }
   $Post = FeedPlus_GetLucky();
   if (UA_JSON::Add() && $Post !== null) {
     $Post->Content = str_replace("[lock]", "", $Post->Content);
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
-    $Posts[]       = $Post;
+    $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
   $FP_CFG  = $zbp->Config('FeedPlus');
   $PushKey = $FP_CFG->PushKey;
@@ -46,7 +46,7 @@ function FeedPlus_AddToFeed(&$Posts)
     $Post->Url   = FeedPlus_Path("Main", "host") . '?act=pushbul&date=' . date("Ymd");
     $Post->Content .= '--<a href="' . $Post->Url . '">点击这里重新获取</a>--';
     $Post->PostTime = time();
-    $Posts[]        = $Post;
+    $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
   $http_post = Network::Create();
   $http_post->open('GET', 'https://api.pushbullet.com/v2/pushes?active=true');
@@ -78,9 +78,8 @@ function FeedPlus_AddToFeed(&$Posts)
     // $Post->Content .= isset($item->file_url) ? '<p>点击查看/下载：<a href="' . $item->file_url . '">' . $Post->Title . '</a></p>' : "";
     $Post->PostTime = $item->created;
     if ($PriKey === "65537" || $PubThis)
-      $Posts[] = $Post;
+      $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
-  return null;
 }
 function FeedPlus_AddMenu(&$m)
 {

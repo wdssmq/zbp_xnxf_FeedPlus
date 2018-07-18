@@ -19,13 +19,13 @@
   <url></url>
 </source>
 <adapted>151740</adapted>
-<version>0.6</version>
+<version>1.0</version>
 <pubdate>2016-07-25</pubdate>
-<modified>2017-06-25</modified>
+<modified>2018-07-18</modified>
 <price>10.24</price>
 <phpver>5.4</phpver>
 <advanced>
-  <dependency>BetterFeed</dependency>
+  <dependency></dependency>
   <rewritefunctions></rewritefunctions>
   <existsfunctions></existsfunctions>
   <conflict></conflict>

@@ -32,7 +32,7 @@ width:96%;
 }
 </style>
 <div id="divMain">
-  <div class="divHeader"><?php echo $blogtitle;?></div>
+  <div class="divHeader"><?php echo $blogtitle;?> <a href="main.php" title="刷新"><small>刷新</small></a></div>
   <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=pushbul"><span class="m-left <?php echo $ddf[2] ?>">PushBullet</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a><?php require "about.php"?></div>
   <div id="divMain2">
 <?php if($act=="lucky" || $act=="lucky-save") { ?>
@@ -125,12 +125,12 @@ if ($act == "pushbul-save") {
       <tr>
         <td>Access Token</td>
         <td><input id="PushKey" name="PushKey" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PushKey;?>" onmouseover="this.select();"></td>
-        <td></td>
+        <td>获取 <a href="https://www.pushbullet.com/#settings/account" target="_blank">https://www.pushbullet.com/#settings/account</a></td>
       </tr>
       <tr>
         <td>公开关键词</td>
         <td><input id="PubWord" name="PubWord" style="width:95%;"  type="text" value="<?php echo $zbp->Config('FeedPlus')->PubWord;?>" placeholder="#PubWord#" onmouseover="this.select();" onblur="if(this.value=='') this.value='#PubWord#'" onfocus="if(this.value=='#PubWord#') this.value=''"/></td>
-        <td>含有该关键词的信息将输出到RSS中；</td>
+        <td>含有该关键词的信息将输出到RSS中；所有订阅者可见</td>
       </tr>
       <tr>
         <td>自用RSS</td>
