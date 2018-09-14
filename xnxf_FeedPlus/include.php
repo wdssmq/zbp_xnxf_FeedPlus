@@ -37,10 +37,9 @@ function FeedPlus_AddToFeed(&$rss2)
     return null;
   $PubWord = $FP_CFG->PubWord;
   $PriKey  = GetVars("PriKey", "GET");
-  $PriFeed = $FP_CFG->PriFeed;
-  if ($PriFeed === $PriKey) {
+  if (VerifyWebToken($PriKey, 'PriKey')) {
     $PriKey = "65537";
-  } else if ($PriKey != null) {
+  } else if (!empty($PriKey)) {
     $Post        = new FeedPlus_Article();
     $Post->Title = "PriKey已失效" . date("Ymd");
     $Post->Url   = FeedPlus_Path("Main", "host") . '?act=pushbul&date=' . date("Ymd");
@@ -56,6 +55,9 @@ function FeedPlus_AddToFeed(&$rss2)
   // var_dump($objData);
   // echo $http_post->responseText;
   // die();
+  if (empty($objData)){
+    return;
+  }
   foreach ($objData->pushes as $item) {
     $PubThis       = false;
     $Post          = new FeedPlus_Article();

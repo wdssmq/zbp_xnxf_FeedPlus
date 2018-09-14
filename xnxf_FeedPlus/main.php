@@ -111,11 +111,11 @@ if ($act == "pushbul-save") {
   }
   $zbp->Config('FeedPlus')->PushKey = $PushKey;
   $zbp->Config('FeedPlus')->PubWord = trim(GetVars("PubWord","POST"));
-  if (GetVars("PriReset", "POST") === "true")
-    $zbp->Config('FeedPlus')->PriFeed = md5(date("Ymdh") . GetVars("PushKey", "POST"));
   $zbp->SaveConfig('FeedPlus');
   Redirect("main.php?act=pushbul");
 }
+$t = intval(137 * 24 * 3600) + time();
+$url = "{$zbp->host}feed.php?PriKey=".CreateWebToken('PriKey',$t);
 ?>
     <form id="FP-form" action="main.php?act=pushbul-save" method="post">
     <table width="100%">
@@ -136,8 +136,8 @@ if ($act == "pushbul-save") {
       </tr>
       <tr>
         <td>自用RSS</td>
-        <td><input id="PriFeed" name="PriFeed" style="width:95%;" onblur="this.value='<?php echo $zbp->feedurl . "?PriKey=" . $zbp->Config('FeedPlus')->PriFeed;?>'" type="text" value="<?php echo $zbp->feedurl . "?PriKey=" . $zbp->Config('FeedPlus')->PriFeed;?>" onmouseover="this.select();" onclick="that = this;setTimeout(function(){that.select()},150);"/><input id="PriReset" name="PriReset" type="hidden" value="false" /></td>
-        <td>私用Read it later <a href="javascript:;" onclick="$('#PriReset').val('true');$('#FP-form').submit()">生成新地址</a> （每小时只能修改一次）</td>
+        <td><input id="PriFeed" name="PriFeed" style="width:95%;" onblur="this.value='<?php echo $url;?>'" type="text" value="<?php echo$url;?>" onmouseover="this.select();" onclick="that = this;setTimeout(function(){that.select()},150);"/><input id="PriReset" name="PriReset" type="hidden" value="false" /></td>
+        <td>私用Read it later,有效期137天</td>
       </tr>
       <tr>
         <td colspan="3"><input type="submit" value="提交" /></td>
