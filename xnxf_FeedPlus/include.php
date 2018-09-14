@@ -115,14 +115,14 @@ function FeedPlus_LuckyView(&$template)
   $hash = GetVars("hash", "GET");
   if ($hash != null) {
     $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
-    $title =& $template->GetTags('title');
-    $article =& $template->GetTags('article');
+    $title = &$template->GetTags('title');
+    $article = &$template->GetTags('article');
     $Post = FeedPlus_GetLucky($hash);
     if ($Post != null && $hash == GetVars("hash", "GET")) {
       $title                = $Post->Title;
       $article->Title       = $Post->Title;
       $article->Content     = $Post->Content;
-      // $article->IsLock = True;
+      $article->IsLock = True;
       $GLOBALS['LuckyLink'] = $Post->Url;
       Add_Filter_Plugin('Filter_Plugin_Post_Url', 'FeedPlus_LuckyLink');
     } else {
@@ -139,13 +139,14 @@ function FeedPlus_GetLucky(&$hash = "")
 {
   global $zbp;
   $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
+  $arrCodes = $zbp->Config('FeedPlus')->LuckyCode;
   $LuckyCFG =& $LuckyData->Lucky;
   if ($LuckyCFG->Time > time() && $hash == "")
     return null;
   $NumsDays = floor((time() + $LuckyCFG->Time) / 86400);
   $strHash  = substr(base_convert($NumsDays * $LuckyCFG->Time, 10, 36), -6);
-  $index    = $NumsDays % count($LuckyData->Codes);
-  $code     = trim($LuckyData->Codes[$index]);
+  $index    = $NumsDays % count($arrCodes);
+  $code     = trim($arrCodes[$index]);
   if (strpos($code, "*") !== false) {
     $arrCode = explode("*", $code);
     if ($arrCode[1] !== (string) $NumsDays && $hash !== $strHash)
@@ -158,7 +159,9 @@ function FeedPlus_GetLucky(&$hash = "")
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
-    $LuckyData->Codes[$index] = $code . "*" . (string) $NumsDays;
+    $arrCodes[$index] = $code . "*" . (string) $NumsDays;
+    $zbp->Config('FeedPlus')->LuckyCode  = $arrCodes;
+    $zbp->SaveConfig('FeedPlus');
     file_put_contents(FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
   }
   $Post        = new FeedPlus_Article();
@@ -267,7 +270,8 @@ function InstallPlugin_xnxf_FeedPlus()
   if (!$zbp->HasConfig('FeedPlus')) {
     $zbp->Config('FeedPlus')->PushKey = "";
     $zbp->Config('FeedPlus')->PubWord = "#PubWord#";
-    $zbp->Config('FeedPlus')->PriFeed = md5(time());
+    // $zbp->Config('FeedPlus')->PriFeed = md5(time());
+    $zbp->Config('FeedPlus')->LuckyCode = array();
     $zbp->SaveConfig('FeedPlus');
   }
   if (!is_file(FeedPlus_Path('PostDB'))) {
@@ -277,7 +281,7 @@ function InstallPlugin_xnxf_FeedPlus()
   }
   UA_JSON::Create();
   if (!is_file(FeedPlus_Path('LuckyDB'))) {
-    $data = '{"Lucky":{"Time":1,"PageID":1,"Title":"【手慢无】点击查看福利","Link":"{%host%}lucky/{%hash%}.html","Content":"<p>不定期通过Feed发放福利</p><p>{%code%}</p><p>强烈建议使用下边地址订阅收取福利通知：</p><p><a href=\"{%feed%}\" target=\"_blank\" title=\"{%feed%}\">{%feed%}</a></p>"},"Codes":[""]}';
+    $data = '{"Lucky":{"Time":1,"PageID":1,"Title":"【手慢无】点击查看福利","Link":"{%host%}lucky/{%hash%}.html","Content":"<p>不定期通过Feed发放福利</p><p>{%code%}</p><p>强烈建议使用下边地址订阅收取福利通知：</p><p><a href=\"{%feed%}\" target=\"_blank\" title=\"{%feed%}\">{%feed%}</a></p>"}}';
     file_put_contents(FeedPlus_Path('LuckyDB'), $data);
   }
   if (!is_file(FeedPlus_Path('IndexDB'))) {

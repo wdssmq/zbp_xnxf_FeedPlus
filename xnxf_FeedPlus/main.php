@@ -39,7 +39,8 @@ width:96%;
 <?php
 $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
 $LuckyCFG =& $LuckyData->Lucky;
-$strCodes = join("\n", $LuckyData->Codes);
+$arrCodes = $zbp->Config('FeedPlus')->LuckyCode;
+$strCodes = join("\n",$arrCodes);
 if ($act == "lucky-save") {
   if ($LuckyCFG->Time < time()) {
     $LuckyCFG->Time = time() + 1877;
@@ -50,8 +51,9 @@ if ($act == "lucky-save") {
     $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
   $LuckyCFG->Content = trim(GetVars("txaContent", "POST"));
   $strCodes          = str_replace("\r\n", "\n", trim(GetVars("txaCodes", "POST")));
-  $LuckyData->Codes  = explode("\n", $strCodes);
+  $zbp->Config('FeedPlus')->LuckyCode  = explode("\n", $strCodes);
   file_put_contents(FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
+  $zbp->SaveConfig('FeedPlus');
   $zbp->SetHint('good');
   Redirect("main.php?act=lucky");
 }
@@ -81,7 +83,7 @@ if ($act == "lucky-save") {
         </td>
       </tr>
       <tr>
-        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed">点击安装<code>MarkDown</code>脚本</a> 即可使用MD语法并在这里显示工具条。</p><textarea class="md-needed" name="txaContent" id="txaContent" rows="13" style="width: 100%;"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
+        <td colspan="2"><p><label for="txaContent">正文（同时用于RSS显示，可使用html;）：</label></p><p class="md-toolbar"><a href="https://greasyfork.org/zh-CN/scripts/29203-markdown-if-needed" title="markdown-if-needed" target="_blank">点击安装<code>MarkDown</code>脚本</a> 即可使用MD语法并在这里显示工具条。</p><textarea class="md-needed" name="txaContent" id="txaContent" rows="13" style="width: 100%;"><?php echo TransferHTML($LuckyCFG->Content,"[html-format]");?></textarea></td>
         <td><p><label for="txaContent">福利码（一行一条,*表示已经被查看过，不影响再次显示）：</label></p><textarea name="txaCodes" id="txaCodes" cols="67" rows="13"><?php echo $strCodes; ?></textarea></td>
       </tr>
       <tr>
