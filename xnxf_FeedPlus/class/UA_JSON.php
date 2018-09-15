@@ -40,6 +40,8 @@ class UA_JSON
         $data->MaxID--;
         $Guests->$IP->Time = time();
         $result            = true;
+      } else {
+        $Guests->$IP->Agent = $Agent;
       }
     }
     $file = UA_JSON::FilePath();

@@ -2,7 +2,7 @@
 <plugin version="php">
 <id>xnxf_FeedPlus</id>
 <name>FeedPlus【PHP】</name>
-<url>http://app.zblogcn.com/?auth=80</url>
+<url>https://app.zblogcn.com/?auth=6401c4a7-89cd-48f9-a68b-d6464d8c3bc8</url>
 <note>对Feed功能进行扩展，加入文章以外的内容</note>
 <description>置百丈玄冰而崩裂，掷须臾池水而漂摇。</description>
 <path>main.php</path>
@@ -21,8 +21,8 @@
 <adapted>151740</adapted>
 <version>1.0</version>
 <pubdate>2016-07-25</pubdate>
-<modified>2018-07-18</modified>
-<price>10.24</price>
+<modified>2018-09-14</modified>
+<price>13.7</price>
 <phpver>5.4</phpver>
 <advanced>
   <dependency></dependency>

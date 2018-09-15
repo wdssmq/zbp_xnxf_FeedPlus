@@ -43,7 +43,7 @@ $arrCodes = $zbp->Config('FeedPlus')->LuckyCode;
 $strCodes = join("\n",$arrCodes);
 if ($act == "lucky-save") {
   if ($LuckyCFG->Time < time()) {
-    $LuckyCFG->Time = time() + 1877;
+    $LuckyCFG->Time = time() + 877;
   }
   $LuckyCFG->PageID  = trim(GetVars("edtPageID", "POST"));
   $LuckyCFG->Title   = trim(GetVars("edtTitle", "POST"));
