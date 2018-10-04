@@ -15,6 +15,8 @@ function ActivePlugin_xnxf_FeedPlus()
 function FeedPlus_AddToFeed(&$rss2)
 {
   global $zbp;
+  if (isset($rss2->break) && $rss2->break)
+    return;
   if (GetVars("redirect", "GET") !== null)
     Redirect301($zbp->feedurl);
   $DataDB        = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
@@ -26,7 +28,8 @@ function FeedPlus_AddToFeed(&$rss2)
     }
   }
   $Post = FeedPlus_GetLucky();
-  if (UA_JSON::Add() && $Post !== null) {
+  // if (UA_JSON::Add() && $Post !== null) {
+  if ($Post !== null) {
     $Post->Content = str_replace("[lock]", "", $Post->Content);
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
