@@ -19,8 +19,8 @@ function FeedPlus_AddToFeed(&$rss2)
     return;
   if (GetVars("redirect", "GET") !== null)
     Redirect301($zbp->feedurl);
-  $DataDB        = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
-  $DataDB->Posts = (array) $DataDB->Posts;
+  $DataDB = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
+  $DataDB->Posts = (array)$DataDB->Posts;
   foreach ($DataDB->Posts as $k => $v) {
     $Post = json_decode($v);
     if ($Post->Public == 0) {
@@ -34,18 +34,18 @@ function FeedPlus_AddToFeed(&$rss2)
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
-  $FP_CFG  = $zbp->Config('FeedPlus');
+  $FP_CFG = $zbp->Config('FeedPlus');
   $PushKey = $FP_CFG->PushKey;
   if ($PushKey == "")
     return null;
   $PubWord = $FP_CFG->PubWord;
-  $PriKey  = GetVars("PriKey", "GET");
+  $PriKey = GetVars("PriKey", "GET");
   if (VerifyWebToken($PriKey, 'PriKey')) {
     $PriKey = "65537";
   } else if (!empty($PriKey)) {
-    $Post        = new FeedPlus_Article();
+    $Post = new FeedPlus_Article();
     $Post->Title = "PriKey已失效" . date("Ymd");
-    $Post->Url   = FeedPlus_Path("Main", "host") . '?act=pushbul&date=' . date("Ymd");
+    $Post->Url = FeedPlus_Path("Main", "host") . '?act=pushbul&date=' . date("Ymd");
     $Post->Content .= '--<a href="' . $Post->Url . '">点击这里重新获取</a>--';
     $Post->PostTime = time();
     $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
@@ -58,25 +58,25 @@ function FeedPlus_AddToFeed(&$rss2)
   // var_dump($objData);
   // echo $http_post->responseText;
   // die();
-  if (empty($objData)){
+  if (empty($objData)) {
     return;
   }
   foreach ($objData->pushes as $item) {
-    $PubThis       = false;
-    $Post          = new FeedPlus_Article();
-    $Post->Title   = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : $item->body);
-    $Post->Url     = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
+    $PubThis = false;
+    $Post = new FeedPlus_Article();
+    $Post->Title = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : $item->body);
+    $Post->Url = isset($item->url) ? $item->url : (isset($item->file_url) ? $item->file_url : $zbp->feedurl . "?redirect=" . $item->created);
     $Post->Content = trim(isset($item->body) ? $item->body : $Post->Title);
     if ($Post->Content == $PubWord)
       $Post->Content = $Post->Title . $Post->Content;
     if (strpos($Post->Content, $PubWord) !== false) {
-      $Post->Title   = str_replace($PubWord, "", $Post->Title) . " - $PubWord";
+      $Post->Title = str_replace($PubWord, "", $Post->Title) . " - $PubWord";
       $Post->Content = str_replace($PubWord, "", $Post->Content) . " - $PubWord";
-      $PubThis       = true;
+      $PubThis = true;
     }
     if ($Post->Title !== $Post->Content && strpos($Post->Content, SubStrUTF8($Post->Title, 27)) == false)
       $Post->Content = SubStrUTF8($Post->Title, 27) . "</p><p>" . $Post->Content;
-    $Post->Title   = SubStrUTF8($Post->Title, 77);
+    $Post->Title = SubStrUTF8($Post->Title, 77);
     $Post->Content = "<p>" . $Post->Content . "</p>";
     // $Post->Content .= isset($item->url) ? '<p>点击查看：<a href="' . $item->url . '">' . $item->url . '</a></p>' : "";
     $Post->Content .= isset($item->image_url) ? '<p><img src="' . $item->image_url . '" alt="' . $Post->Title . '" /></p>' : "";
@@ -98,14 +98,14 @@ function FeedPlus_Rewrite($inpurl)
   if ($zbp->cookiespath === substr($url, 0, strlen($zbp->cookiespath))) {
     $url = substr($url, strlen($zbp->cookiespath));
   }
-  $url       = trim(urldecode($url), '/');
+  $url = trim(urldecode($url), '/');
   $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
-  $LuckyCFG =& $LuckyData->Lucky;
+  $LuckyCFG = &$LuckyData->Lucky;
   $r = UrlRule::OutputUrlRegEx(str_replace("{%hash%}", "{%alias%}", $LuckyCFG->Link), 'page');
   $m = array();
   if (preg_match($r, $url, $m) == 1) {
     $_GET["hash"] = $m[1];
-    $result       = ViewPost($LuckyCFG->PageID, $LuckyCFG->PageID, false);
+    $result = ViewPost($LuckyCFG->PageID, $LuckyCFG->PageID, false);
     if ($result == false) {
       $zbp->ShowError(2, __FILE__, __LINE__);
     } else {
@@ -124,10 +124,10 @@ function FeedPlus_LuckyView(&$template)
     $article = &$template->GetTags('article');
     $Post = FeedPlus_GetLucky($hash);
     if ($Post != null && $hash == GetVars("hash", "GET")) {
-      $title                = $Post->Title;
-      $article->Title       = $Post->Title;
-      $article->Content     = $Post->Content;
-      $article->IsLock = True;
+      $title = $Post->Title;
+      $article->Title = $Post->Title;
+      $article->Content = $Post->Content;
+      $article->IsLock = true;
       $GLOBALS['LuckyLink'] = $Post->Url;
       Add_Filter_Plugin('Filter_Plugin_Post_Url', 'FeedPlus_LuckyLink');
     } else {
@@ -145,16 +145,18 @@ function FeedPlus_GetLucky(&$hash = "")
   global $zbp;
   $LuckyData = json_decode(file_get_contents(FeedPlus_Path('LuckyDB')));
   $arrCodes = $zbp->Config('FeedPlus')->LuckyCode;
-  $LuckyCFG =& $LuckyData->Lucky;
+  if (count($arrCodes) === 0)
+    return;
+  $LuckyCFG = &$LuckyData->Lucky;
   if ($LuckyCFG->Time > time() && $hash == "")
     return null;
   $NumsDays = floor((time() + $LuckyCFG->Time) / 86400);
-  $strHash  = substr(base_convert($NumsDays * $LuckyCFG->Time, 10, 36), -6);
-  $index    = $NumsDays % count($arrCodes);
-  $code     = trim($arrCodes[$index]);
+  $strHash = substr(base_convert($NumsDays * $LuckyCFG->Time, 10, 36), -6);
+  $index = $NumsDays % count($arrCodes);
+  $code = trim($arrCodes[$index]);
   if (strpos($code, "*") !== false) {
     $arrCode = explode("*", $code);
-    if ($arrCode[1] !== (string) $NumsDays && $hash !== $strHash)
+    if ($arrCode[1] !== (string)$NumsDays && $hash !== $strHash)
       return null;
     $code = $arrCode[0];
   }
@@ -164,21 +166,21 @@ function FeedPlus_GetLucky(&$hash = "")
     $hash = $strHash;
     $code = "--<a href=\"{%url%}\" title=\"点击查看详情\">点击查看详情</a>--";
   } else {
-    $arrCodes[$index] = $code . "*" . (string) $NumsDays;
-    $zbp->Config('FeedPlus')->LuckyCode  = $arrCodes;
+    $arrCodes[$index] = $code . "*" . (string)$NumsDays;
+    $zbp->Config('FeedPlus')->LuckyCode = $arrCodes;
     $zbp->SaveConfig('FeedPlus');
     file_put_contents(FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
   }
-  $Post        = new FeedPlus_Article();
+  $Post = new FeedPlus_Article();
   $Post->Title = $LuckyCFG->Title;
   if ($zbp->option['ZC_STATIC_MODE'] !== 'REWRITE')
     $LuckyCFG->Link = "{%host%}?id={%PageID%}&hash={%hash%}&rewrite=1";
-  $Post->Url      = str_replace("{%host%}", $zbp->host, $LuckyCFG->Link);
-  $Post->Url      = str_replace("{%hash%}", $strHash, $Post->Url);
-  $Post->Url      = str_replace("{%PageID%}", $LuckyCFG->PageID, $Post->Url);
-  $Post->Content  = str_replace("{%code%}", $code, $LuckyCFG->Content);
-  $Post->Content  = str_replace("{%url%}", $Post->Url, $Post->Content);
-  $Post->Content  = str_replace("{%feed%}", $zbp->feedurl, $Post->Content);
+  $Post->Url = str_replace("{%host%}", $zbp->host, $LuckyCFG->Link);
+  $Post->Url = str_replace("{%hash%}", $strHash, $Post->Url);
+  $Post->Url = str_replace("{%PageID%}", $LuckyCFG->PageID, $Post->Url);
+  $Post->Content = str_replace("{%code%}", $code, $LuckyCFG->Content);
+  $Post->Content = str_replace("{%url%}", $Post->Url, $Post->Content);
+  $Post->Content = str_replace("{%feed%}", $zbp->feedurl, $Post->Content);
   $Post->PostTime = $LuckyCFG->Time;
   return $Post;
 }
@@ -198,15 +200,15 @@ function FeedPlus_Get()
   global $xnxf_link;
   if (GetVars("type", "GET") == "Feed") {
     if (isset($_GET['id'])) {
-      $DataDB            = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
-      $DataDB->Posts     = (array) $DataDB->Posts;
-      $Post              = json_decode($DataDB->Posts["ID" . $_GET['id']]);
+      $DataDB = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
+      $DataDB->Posts = (array)$DataDB->Posts;
+      $Post = json_decode($DataDB->Posts["ID" . $_GET['id']]);
       $article->AuthorID = $Post->User;
-      $article->Status   = $Post->Public;
-      $article->Title    = $Post->Title;
+      $article->Status = $Post->Public;
+      $article->Title = $Post->Title;
       $article->PostTime = $Post->PostTime;
-      $article->Content  = $Post->Content;
-      $xnxf_link         = $Post->Url;
+      $article->Content = $Post->Content;
+      $xnxf_link = $Post->Url;
       Add_Filter_Plugin('Filter_Plugin_Edit_Response5', 'FeedPlus_Edit_Link');
     }
     Add_Filter_Plugin('Filter_Plugin_Edit_Response5', 'FeedPlus_Edit');
@@ -219,21 +221,21 @@ function FeedPlus_Post($article)
     if (!is_file(FeedPlus_Path("PostDB"))) {
       $DataDB = new FeedPlus_Posts();
     } else {
-      $DataDB        = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
-      $DataDB->Posts = (array) $DataDB->Posts;
+      $DataDB = json_decode(file_get_contents(FeedPlus_Path("PostDB")));
+      $DataDB->Posts = (array)$DataDB->Posts;
     }
     if ($article->ID == 0) {
       $DataDB->MaxID += 1;
       $article->ID = $DataDB->MaxID;
     }
-    $Post                            = new FeedPlus_Article();
-    $Post->ID                        = $article->ID;
-    $Post->Public                    = (int) $article->Status;
-    $Post->User                      = (int) $article->AuthorID;
-    $Post->Title                     = $article->Title;
-    $Post->PostTime                  = $_POST['PostTime'];
-    $Post->Url                       = $_POST['edtLink'];
-    $Post->Content                   = $article->Content;
+    $Post = new FeedPlus_Article();
+    $Post->ID = $article->ID;
+    $Post->Public = (int)$article->Status;
+    $Post->User = (int)$article->AuthorID;
+    $Post->Title = $article->Title;
+    $Post->PostTime = $_POST['PostTime'];
+    $Post->Url = $_POST['edtLink'];
+    $Post->Content = $article->Content;
     $DataDB->Posts["ID" . $Post->ID] = json_encode($Post);
     file_put_contents(FeedPlus_Path("PostDB"), json_encode($DataDB));
     $zbp->BuildModule();
