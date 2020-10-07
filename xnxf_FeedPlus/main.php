@@ -150,7 +150,7 @@ InstallPlugin_xnxf_FeedPlus();
           </tr>
           <tr>
             <td>公开关键词</td>
-            <td><input id="PubWord" name="PubWord" style="width:95%;" type="text" value="<?php echo $zbp->Config('xnxf_FeedPlus')->PubWord; ?>" placeholder="#PubWord#" onmouseover="this.select();" onblur="if(this.value=='') this.value='#PubWord#'" onfocus="if(this.value=='#PubWord#') this.value=''" /></td>
+            <td><input id="PubWord" name="PubWord" style="width:95%;" type="text" value="<?php echo $zbp->Config('xnxf_FeedPlus')->PubWord; ?>" placeholder="#PubWord" onmouseover="this.select();" onblur="if(this.value=='') this.value='#PubWord'"></td>
             <td>含有该关键词的信息将输出到RSS中；所有订阅者可见</td>
           </tr>
           <tr>
@@ -163,6 +163,8 @@ InstallPlugin_xnxf_FeedPlus();
           </tr>
         </table>
       </form>
+      <p>查看：<?php echo xnxf_FeedPlus_a("{$zbp->host}feed.php", "查看"); ?></p>
+      <p>订阅：<?php echo xnxf_FeedPlus_a("https://feeds.pub/feed/{$enCodeFeed}", "订阅"); ?></p>
     <?php } else { ?>
       <!-- 默认表格 -->
       <table width="100%">

@@ -276,7 +276,7 @@ function InstallPlugin_xnxf_FeedPlus()
   global $zbp;
   if (!$zbp->HasConfig('xnxf_FeedPlus')) {
     $zbp->Config('xnxf_FeedPlus')->PushKey = "";
-    $zbp->Config('xnxf_FeedPlus')->PubWord = "#PubWord#";
+    $zbp->Config('xnxf_FeedPlus')->PubWord = "#PubWord";
     // $zbp->Config('xnxf_FeedPlus')->PriFeed = md5(time());
     $zbp->Config('xnxf_FeedPlus')->LuckyCode = array();
     $zbp->SaveConfig('xnxf_FeedPlus');
