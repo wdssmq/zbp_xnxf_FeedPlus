@@ -48,6 +48,7 @@ InstallPlugin_xnxf_FeedPlus();
       $arrCodes = $zbp->Config('xnxf_FeedPlus')->LuckyCode;
       $strCodes = join("\n", $arrCodes);
       if ($act == "lucky-save") {
+        CheckIsRefererValid();
         if ($LuckyCFG->Time < time()) {
           $LuckyCFG->Time = time() + 877;
         }
@@ -64,7 +65,7 @@ InstallPlugin_xnxf_FeedPlus();
         Redirect("main.php?act=lucky");
       }
       ?>
-      <form action="main.php?act=lucky-save" method="post">
+      <form action="<?php echo BuildSafeURL("main.php?act=lucky-save");?>" method="post">
         <table width="100%">
           <tr>
             <th width="7%">项目</th>
@@ -114,6 +115,7 @@ InstallPlugin_xnxf_FeedPlus();
     <?php } elseif ($act == "pushbul" || $act == "pushbul-save") { ?>
       <?php
       if ($act == "pushbul-save") {
+        CheckIsRefererValid();
         $PushKey = trim(GetVars("PushKey", "POST"));
         $http_post  = Network::Create();
         $http_post->open('GET', 'https://api.pushbullet.com/v2/users/me');
@@ -134,7 +136,7 @@ InstallPlugin_xnxf_FeedPlus();
       $t = intval(137 * 24 * 3600) + time();
       $url = "{$zbp->host}feed.php?PriKey=" . CreateWebToken('PriKey', $t);
       ?>
-      <form id="FP-form" action="main.php?act=pushbul-save" method="post">
+      <form id="FP-form" action="<?php echo BuildSafeURL("main.php?act=pushbul-save");?>" method="post">
         <table width="100%">
           <tr>
             <th width="10%">项目</th>
