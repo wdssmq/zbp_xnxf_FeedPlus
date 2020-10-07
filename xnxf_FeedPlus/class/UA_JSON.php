@@ -4,7 +4,7 @@ class UA_JSON
   // const REFERER_DEFAULT
   public static function FilePath()
   {
-    return FeedPlus_Path("Log");
+    return xnxf_FeedPlus_Path("Log");
   }
   //UA_JSON::Read()
   public static function Read()
@@ -15,7 +15,7 @@ class UA_JSON
   public static function Create()
   {
     $file = UA_JSON::FilePath();
-    if (!is_file($file)) {
+    if (!is_file($file) || UA_JSON::Read() == null) {
       if (!file_exists(dirname($file))) {
         @mkdir(dirname($file), 0755, true);
       }
@@ -27,18 +27,21 @@ class UA_JSON
   {
     $result = false;
     $data   = UA_JSON::Read();
-    $Guests =& $data->Guests;
-    $IP    = GetGuestIP();
-    $Agent = GetGuestAgent();
+    $Guests = &$data->Guests;
+    $IP     = GetGuestIP();
+    $Agent  = GetGuestAgent();
+    $Time   = time();
+    // 首次访问时记录IP
     if (!isset($Guests->$IP)) {
       $data->MaxID++;
-      $Guests->$IP        = json_decode('{"Time":' . time() . '}');
+      $Guests->$IP        = json_decode("{\"Time\":{$Time}}");
       $Guests->$IP->Agent = $Agent;
       $Guests->$IP->ID    = $data->MaxID;
     } else {
+      // 第二次访问并且浏览器没变，以及之后有其他访客访问时
       if ($Guests->$IP->Agent === $Agent && $Guests->$IP->ID <= $data->MaxID - 3) {
         $data->MaxID--;
-        $Guests->$IP->Time = time();
+        $Guests->$IP->Time = $Time;
         $result            = true;
       } else {
         $Guests->$IP->Agent = $Agent;
@@ -52,7 +55,7 @@ class UA_JSON
   public static function Del()
   {
     $data = UA_JSON::Read();
-    $Guests =& $data->Guests;
+    $Guests = &$data->Guests;
     foreach ($Guests as $k => $v) {
       if ($v->Time < strtotime("-7 day")) {
         unset($Guests->$k);
@@ -62,4 +65,3 @@ class UA_JSON
     file_put_contents($file, json_encode($data));
   }
 }
-?>

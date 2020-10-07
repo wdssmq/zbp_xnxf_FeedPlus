@@ -1,53 +1,66 @@
+<!--
+  <div class="SubMenu">
+    <a href="main.php" title="首页"><span class="m-left m-now">首页</span></a>
+    <?php require_once "about.php"; ?>
+  </div>
+-->
+
 <style type="text/css">
-#divMain .SubMenu {height: auto;}
-i.xnxf-tip {
-	background-color: red;
-	border-radius: 7px;
-	height: 7px;
-	padding: 0;
-	position: relative;
-	right: 8px;
-	top: -3px;
-	width: 7px;
-}
-#help a {
-  background-color:#fff;
-}
-#help a.t-qq {
-	background: url("http://mat1.gtimg.com/app/vt/images/follow/quickfollowbgnew.gif?v=1215");
-	background-position: -31px -230px;
-	height: 28px;
-	text-indent: -20em;
-	width: 70px;
-}
+  #divMain .SubMenu {
+    height: auto;
+  }
+
+  i.xnxf-tip {
+    background-color: red;
+    border-radius: 7px;
+    height: 7px;
+    padding: 0;
+    position: relative;
+    right: 8px;
+    top: -3px;
+    width: 7px;
+  }
+
+  #help {
+    padding-top: 1em;
+  }
+
+  #help a {
+    background-color: inherit;
+    float: none;
+  }
+
+  hr {
+    background-color: navajowhite;
+    border: none;
+    display: block;
+    height: 1px;
+    margin: 1rem 0;
+    visibility: visible;
+  }
 </style>
 <i class="xnxf-tip" style="float: right"></i>
-<a href="javascript:;" style="float: right;" onclick="$('#help,#divMain2').slideToggle();$('.xnxf-tip').animate({opacity: 0});SetCookie('xnxf-tip', 'xnxf', 365)" title="查看/隐藏关于"><span class="m-right">[关于]</span></a>
+<a href="javascript:;" style="float: right;" onclick="$('#help,#divMain2').slideToggle();$('.xnxf-tip').animate({opacity: 0});SetCookie('xnxf-tip', '2020-06-03', 365)" title="查看/隐藏关于"><span class="m-right">[关于]</span></a>
 <div id="help" style="display:none;clear: both">
-<table>
-<tr>
-  <td>QQ：</td>
-  <td><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=349467624&site=qq&menu=yes"><img border="0" src="//wpa.qq.com/pa?p=2:349467624:51" alt="置百丈玄冰而崩裂，掷须臾池水而漂摇。" title="置百丈玄冰而崩裂，掷须臾池水而漂摇。"/></a></td>
-  <td>349467624</td>
-</tr>
-<tr>
-  <td>Q群：</td>
-  <td><a target="_blank" href="https://jq.qq.com/?_wv=1027&k=5PiWmLb"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="我的咸鱼心" title="我的咸鱼心"></a></td>
-  <td>189574683</td>
-</tr>
-<tr>
-  <td>捐赠：</td>
-  <td><a href="http://www.wdssmq.com/guestbook.html#donate" target="_blank" title="wdssmq@qq.com"><img src="https://img.alipay.com/sys/personalprod/style/mc/btn-index.png" width="120" alt="wdssmq@qq.com"></a></td>
-  <td>wdssmq@qq.com</td>
-</tr>
-<tr>
-	<td colspan="3" style="text-align: center">置百丈玄冰而崩裂，掷须臾池水而漂摇。</td>
-</tr>
-</table>
+  <p>QQ：349467624 <a href="http://wpa.qq.com/msgrd?v=3&amp;uin=349467624&amp;site=qq&amp;menu=yes" title="沉冰浮水的QQ"><img src="https://www.wdssmq.com/zb_users/logos/qq_button.png" alt="QQ" title="QQ"></a></p>
+  <p>博客：<a href="https://www.wdssmq.com" title="沉冰浮水">https://www.wdssmq.com</a></p>
+  <p>Feed：<a href="http://feed.wdssmq.com" title="Feed">http://feed.wdssmq.com</a></p>
+  <p>知乎：<a href="https://www.zhihu.com/people/wdssmq" title="知乎">https://www.zhihu.com/people/wdssmq</a></p>
+  <p>GitHub：<a href="https://github.com/wdssmq" title="GitHub">https://github.com/wdssmq</a></p>
+  <p>GreasyFork：<a href="https://greasyfork.org/zh-CN/users/6865-wdssmq" title="GreasyFork">https://greasyfork.org/zh-CN/users/6865-wdssmq</a></p>
+  <p>Twitter：<a href="http://twitter.com/wdssmq" title="Twitter">http://twitter.com/wdssmq</a></p>
+  <hr>
+  <p>爱发电：<a href="https://afdian.net/@wdssmq" title="爱发电">https://afdian.net/@wdssmq</a></p>
+  <p>[AD：<a href="http://www.webweb.com/index.asp?upline=wdssmq" target="_blank" title="香港主机" rel="nofollow">ASP香港主机</a> 优惠码： WXXX10%OFF ]</p>
+  <p>[AD：<a title="老薛主机" target="_blank" href="https://my.laoxuehost.net/aff.php?aff=294">PHP美国空间</a> 优惠码：15off-xnxf ]</p>
+  <p>[AD：<a title="主机云" target="_blank" href="https://my.hostyun.com/page.aspx?c=referral&u=8680">主机云</a>]</p>
+  <p>[AD：<a title="Vultr" target="_blank" href="https://www.vultr.com/?ref=7663955">Vultr</a>]</p>
 </div>
 <div style="clear: both"></div>
 <script type="text/javascript">
-if(GetCookie("xnxf-tip")=="xnxf"){
-  $('.xnxf-tip').css({opacity: 0});
-}
+  if (GetCookie("xnxf-tip") == '2020-06-03') {
+    $('.xnxf-tip').css({
+      opacity: 0
+    });
+  }
 </script>

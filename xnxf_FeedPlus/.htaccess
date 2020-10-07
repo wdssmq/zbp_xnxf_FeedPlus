@@ -1,4 +1,4 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule ^.+lock.*$ https://%{HTTP_HOST} [L,R=301]
+RewriteRule ^.+lock$ http://%{HTTP_HOST} [L,R=301]
 </IfModule>
