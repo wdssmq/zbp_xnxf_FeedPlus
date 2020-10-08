@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin version="php">
 <id>xnxf_FeedPlus</id>
-<name>FeedPlus【PHP】</name>
+<name>Feed输出扩展【PHP】</name>
 <url>//jq.qq.com/?_wv=1027&amp;k=555hND5</url>
 <note>对Feed功能进行扩展，加入文章以外的内容</note>
 <description>置百丈玄冰而崩裂，掷须臾池水而漂摇。</description>

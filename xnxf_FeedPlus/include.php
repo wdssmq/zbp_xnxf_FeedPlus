@@ -89,7 +89,7 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
 function xnxf_FeedPlus_AddMenu(&$m)
 {
   global $zbp;
-  $m[] = MakeTopMenu("root", 'xnxf_FeedPlus', $zbp->host . "zb_users/plugin/xnxf_FeedPlus/main.php", "", "FeedPlus");
+  $m[] = MakeTopMenu("root", 'Feed输出扩展', $zbp->host . "zb_users/plugin/xnxf_FeedPlus/main.php", "", "FeedPlus");
 }
 function xnxf_FeedPlus_Rewrite($inpurl)
 {
