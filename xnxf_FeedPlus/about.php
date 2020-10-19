@@ -56,6 +56,9 @@
   <p>[AD：<a title="老薛主机" target="_blank" href="https://my.laoxuehost.net/aff.php?aff=294">PHP美国空间</a> 优惠码：15off-xnxf ]</p>
   <p>[AD：<a title="主机云" target="_blank" href="https://my.hostyun.com/page.aspx?c=referral&u=8680">主机云</a>]</p>
   <p>[AD：<a title="Vultr" target="_blank" href="https://www.vultr.com/?ref=7663955">Vultr</a>]</p>
+  <hr>
+  <p>一款基于QueryList V4的Z-Blog采集插件：<a href="https://github.com/wdssmq/kumo-for-zblog" target="_blank" title="wdssmq/kumo-for-zblog: 一款基于QueryList V4的Z-Blog采集插件">https://github.com/wdssmq/kumo-for-zblog</a></p>
+  <div style="min-height: 59px;"></div>
 </div>
 <div style="clear: both"></div>
 <script type="text/javascript">
