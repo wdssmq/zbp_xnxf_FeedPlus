@@ -19,6 +19,7 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
     return;
   if (GetVars("redirect", "GET") !== null)
     Redirect301($zbp->feedurl);
+  $time = time();
   $DataDB = json_decode(file_get_contents(xnxf_FeedPlus_Path("PostDB")));
   $DataDB->Posts = (array)$DataDB->Posts;
   foreach ($DataDB->Posts as $k => $v) {
@@ -47,7 +48,7 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
     $Post->Title = "PriKey已失效" . date("Ymd");
     $Post->Url = xnxf_FeedPlus_Path("Main", "host") . '?act=pushbul&date=' . date("Ymd");
     $Post->Content .= '--<a href="' . $Post->Url . '">点击这里重新获取</a>--';
-    $Post->PostTime = time();
+    $Post->PostTime = $time;
     $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
   $http_post = Network::Create();
@@ -62,6 +63,11 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
     return;
   }
   foreach ($objData->pushes as $item) {
+    // $item->modified = ceil($item->modified);
+    // $item->created = ceil($item->created);
+    if ($time - $item->created > 3600 * 37) {
+      continue;
+    }
     $PubThis = false;
     $Post = new xnxf_FeedPlus_Article();
     $Post->Title = isset($item->title) ? $item->title : (isset($item->file_name) ? $item->file_name : $item->body);
@@ -143,14 +149,15 @@ function xnxf_FeedPlus_LuckyLink($post)
 function xnxf_FeedPlus_GetLucky(&$hash = "")
 {
   global $zbp;
+  $time = time();
   $LuckyData = json_decode(file_get_contents(xnxf_FeedPlus_Path('LuckyDB')));
   $arrCodes = $zbp->Config('xnxf_FeedPlus')->LuckyCode;
   if (count($arrCodes) === 0)
     return;
   $LuckyCFG = &$LuckyData->Lucky;
-  if ($LuckyCFG->Time > time() && $hash == "")
+  if ($LuckyCFG->Time > $time && $hash == "")
     return null;
-  $NumsDays = floor((time() + $LuckyCFG->Time) / 86400);
+  $NumsDays = floor(($time + $LuckyCFG->Time) / 86400);
   $strHash = substr(base_convert($NumsDays * $LuckyCFG->Time, 10, 36), -6);
   $index = $NumsDays % count($arrCodes);
   $code = trim($arrCodes[$index]);
@@ -277,7 +284,6 @@ function InstallPlugin_xnxf_FeedPlus()
   if (!$zbp->HasConfig('xnxf_FeedPlus')) {
     $zbp->Config('xnxf_FeedPlus')->PushKey = "";
     $zbp->Config('xnxf_FeedPlus')->PubWord = "#PubWord";
-    // $zbp->Config('xnxf_FeedPlus')->PriFeed = md5(time());
     $zbp->Config('xnxf_FeedPlus')->LuckyCode = array();
     $zbp->SaveConfig('xnxf_FeedPlus');
   }
