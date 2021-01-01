@@ -42,9 +42,13 @@ InstallPlugin_xnxf_FeedPlus();
   <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host ?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=pushbul"><span class="m-left <?php echo $ddf[2] ?>">PushBullet</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a><?php require "about.php" ?></div>
   <div id="divMain2">
     <?php if ($act == "lucky" || $act == "lucky-save") { ?>
+      <!-- 手慢无 -->
       <?php
       $LuckyData = json_decode(file_get_contents(xnxf_FeedPlus_Path('LuckyDB')));
       $LuckyCFG = &$LuckyData->Lucky;
+      if (!isset($LuckyCFG->Cycle)) {
+        $LuckyCFG->Cycle = 12;
+      }
       $arrCodes = $zbp->Config('xnxf_FeedPlus')->LuckyCode;
       $strCodes = join("\n", $arrCodes);
       if ($act == "lucky-save") {
@@ -56,6 +60,7 @@ InstallPlugin_xnxf_FeedPlus();
         $LuckyCFG->Title   = trim(GetVars("edtTitle", "POST"));
         if ($zbp->option['ZC_STATIC_MODE'] == 'REWRITE')
           $LuckyCFG->Link    = trim(GetVars("edtLink", "POST"));
+        $LuckyCFG->Cycle    = trim(GetVars("edtCycle", "POST"));
         $LuckyCFG->Content = trim(GetVars("txaContent", "POST"));
         $strCodes          = str_replace("\r\n", "\n", trim(GetVars("txaCodes", "POST")));
         $zbp->Config('xnxf_FeedPlus')->LuckyCode  = explode("\n", $strCodes);
@@ -65,10 +70,10 @@ InstallPlugin_xnxf_FeedPlus();
         Redirect("main.php?act=lucky");
       }
       ?>
-      <form action="<?php echo BuildSafeURL("main.php?act=lucky-save");?>" method="post">
+      <form action="<?php echo BuildSafeURL("main.php?act=lucky-save"); ?>" method="post">
         <table width="100%">
           <tr>
-            <th width="7%">项目</th>
+            <th class="td10">项目</th>
             <th width="45%">内容</th>
             <th>备注</th>
           </tr>
@@ -86,7 +91,14 @@ InstallPlugin_xnxf_FeedPlus();
             <td><label for="edtLink">链接模式：</label></td>
             <td><input type="text" name="edtLink" id="edtLink" value="<?php echo $LuckyCFG->Link; ?>" /></td>
             <td>
-              <p>{%hash%}值自动生成且每天一换；验证无效时会301到绑定的页面网址；</p>
+              <p>{%hash%}值自动生成且每<b><?php echo $LuckyCFG->Cycle; ?>小时</b>一换；验证无效时会301到绑定的页面网址；</p>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="edtCycle">提取周期：</label></td>
+            <td><input type="text" name="edtCycle" id="edtCycle" value="<?php echo $LuckyCFG->Cycle; ?>" /></td>
+            <td>
+              <p>每隔<?php echo $LuckyCFG->Cycle; ?>小时切换下一条福利码；</p>
             </td>
           </tr>
           <tr>
@@ -136,7 +148,7 @@ InstallPlugin_xnxf_FeedPlus();
       $t = intval(137 * 24 * 3600) + time();
       $url = "{$zbp->host}feed.php?PriKey=" . CreateWebToken('PriKey', $t);
       ?>
-      <form id="FP-form" action="<?php echo BuildSafeURL("main.php?act=pushbul-save");?>" method="post">
+      <form id="FP-form" action="<?php echo BuildSafeURL("main.php?act=pushbul-save"); ?>" method="post">
         <table width="100%">
           <tr>
             <th width="10%">项目</th>
@@ -211,6 +223,7 @@ InstallPlugin_xnxf_FeedPlus();
       <p>↑↑上述内容只会在RSS中输出</p>
       <p>查看：<?php echo xnxf_FeedPlus_a("{$zbp->host}feed.php", "查看"); ?></p>
       <p>订阅：<?php echo xnxf_FeedPlus_a("https://feeds.pub/feed/{$enCodeFeed}", "订阅"); ?></p>
+      <p>订阅：<?php echo xnxf_FeedPlus_a("https://www.innoreader.com/feed/{$enCodeFeed}", "订阅"); ?></p>
       <!-- 默认表格结束 -->
     <?php } ?>
   </div>

@@ -157,7 +157,7 @@ function xnxf_FeedPlus_GetLucky(&$hash = "")
   $LuckyCFG = &$LuckyData->Lucky;
   if ($LuckyCFG->Time > $time && $hash == "")
     return null;
-  $NumsDays = floor(($time + $LuckyCFG->Time) / 86400);
+  $NumsDays = floor(($time + $LuckyCFG->Time) / ($LuckyCFG->Cycle * 3600));
   $strHash = substr(base_convert($NumsDays * $LuckyCFG->Time, 10, 36), -6);
   $index = $NumsDays % count($arrCodes);
   $code = trim($arrCodes[$index]);
@@ -302,6 +302,15 @@ function InstallPlugin_xnxf_FeedPlus()
   }
   if (!is_file(xnxf_FeedPlus_Path('IndexDB'))) {
     file_put_contents(xnxf_FeedPlus_Path('IndexDB'), "");
+  }
+}
+function xnxf_FeedPlus_Updated()
+{
+  $LuckyData = json_decode(file_get_contents(xnxf_FeedPlus_Path('LuckyDB')));
+  $LuckyCFG = &$LuckyData->Lucky;
+  if (!isset($LuckyCFG->Cycle)) {
+    $LuckyCFG->Cycle = 12;
+    file_put_contents(xnxf_FeedPlus_Path("LuckyDB"), json_encode($LuckyData));
   }
 }
 function UninstallPlugin_xnxf_FeedPlus()
