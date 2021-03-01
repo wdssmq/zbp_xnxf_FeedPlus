@@ -4,6 +4,7 @@ require __DIR__  . '/class/UA_JSON.php';
 RegisterPlugin("xnxf_FeedPlus", "ActivePlugin_xnxf_FeedPlus");
 function ActivePlugin_xnxf_FeedPlus()
 {
+  Add_Filter_Plugin('Filter_Plugin_Zbp_Load', 'xnxf_FeedPlus_RemoveHooks');
   Add_Filter_Plugin('Filter_Plugin_Admin_TopMenu', 'xnxf_FeedPlus_AddMenu');
   Add_Filter_Plugin('Filter_Plugin_PostArticle_Core', 'xnxf_FeedPlus_Post');
   Add_Filter_Plugin('Filter_Plugin_Edit_Begin', 'xnxf_FeedPlus_Get');
@@ -11,6 +12,10 @@ function ActivePlugin_xnxf_FeedPlus()
   Add_Filter_Plugin('Filter_Plugin_ViewPost_Template', 'xnxf_FeedPlus_LuckyView');
   Add_Filter_Plugin('Filter_Plugin_ViewFeed_End', 'xnxf_FeedPlus_AddToFeed');
   // Add_Filter_Plugin('Filter_Plugin_BetterFeed_AddItem', 'xnxf_FeedPlus_GetLucky');
+}
+function xnxf_FeedPlus_RemoveHooks()
+{
+  Remove_Filter_Plugin('Filter_Plugin_Feed_Begin', 'Include_Index_Begin');
 }
 function xnxf_FeedPlus_AddToFeed(&$rss2)
 {
