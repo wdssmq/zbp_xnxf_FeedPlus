@@ -17,15 +17,7 @@ require $blogpath . 'zb_system/admin/admin_header.php';
 require $blogpath . 'zb_system/admin/admin_top.php';
 InstallPlugin_xnxf_FeedPlus();
 $enCodeFeed = urlencode("{$zbp->host}feed.php");
-$ddf = array("", "", "");
 $act = GetVars("act", "GET");
-if ($act == "lucky") {
-  $ddf[1] = "m-now";
-} elseif ($act == "pushbul") {
-  $ddf[2] = "m-now";
-} else {
-  $ddf[0] = "m-now";
-}
 
 $strHash = "65537";
 $Post =  xnxf_FeedPlus_GetLucky($strHash);
@@ -39,7 +31,15 @@ InstallPlugin_xnxf_FeedPlus();
 </style>
 <div id="divMain">
   <div class="divHeader"><?php echo $blogtitle; ?> <a href="main.php" title="刷新"><small>刷新</small></a></div>
-  <div class="SubMenu"><a href="main.php"><span class="m-left <?php echo $ddf[0] ?>">首页</span></a><a href="<?php echo $zbp->host ?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span></a><a href="main.php?act=pushbul"><span class="m-left <?php echo $ddf[2] ?>">PushBullet</span></a><a href="main.php?act=lucky"><span class="m-left <?php echo $ddf[1] ?>">手慢无</span></a><?php require "about.php" ?></div>
+  <div class="SubMenu">
+    <a href="main.php" class="nav-home"><span class="m-left">首页</span></a>
+    <a href="<?php echo $zbp->host ?>zb_system/admin/edit.php?act=ArticleEdt&type=Feed"><span class="m-left">新建RSS</span>
+    </a>
+    <a href="main.php?act=config" class="nav-config"><span class="m-left">基础配置</span></a>
+    <a href="main.php?act=pushbul" class="nav-pushbul"><span class="m-left">PushBullet</span></a>
+    <a href="main.php?act=lucky" class="nav-lucky"><span class="m-left">手慢无</span></a>
+    <?php require "about.php" ?>
+  </div>
   <div id="divMain2">
     <?php if ($act == "lucky" || $act == "lucky-save") { ?>
       <!-- 手慢无 -->
@@ -124,6 +124,52 @@ InstallPlugin_xnxf_FeedPlus();
           </tr>
         </table>
       </form>
+    <?php } elseif ($act == "config" || $act == "config-save") { ?>
+      <?php
+      $act = GetVars('act', 'GET');
+      $suc = "config";
+      if ($act == 'config-save') {
+        CheckIsRefererValid();
+        foreach ($_POST as $key => $val) {
+          if (substr($key, 0, 5) == 'read_') {
+            continue;
+          }
+          $zbp->Config('xnxf_FeedPlus')->$key = trim($val);
+        }
+        $zbp->SaveConfig('xnxf_FeedPlus');
+        $zbp->BuildTemplate();
+        $zbp->SetHint('good');
+        Redirect('./main.php' . ($suc == null ? '' : "?act={$suc}"));
+      };
+      ?>
+      <form action="<?php echo BuildSafeURL("main.php?act=config-save"); ?>" method="post">
+        <table width="100%" class="tableBorder">
+          <tr>
+            <th width="10%">项目</th>
+            <th width="45%">内容</th>
+            <th>说明</th>
+          </tr>
+          <tr>
+            <td>RSS 条目追加内容</td>
+            <td>
+              <?php zbpform::textarea("ContentAfter", htmlspecialchars($zbp->Config("xnxf_FeedPlus")->ContentAfter), "90%"); ?>
+            </td>
+            <td>
+              <?php echo htmlspecialchars("<img src=\"https://visitor-badge.laobi.icu/badge?page_id={$enCodeFeed}\" alt=\"visitor badge\">"); ?>
+            </td>
+            <!--
+            <p>
+              <img src="https://visitor-badge.laobi.icu/badge?page_id=https%3A%2F%2Fwww.wdssmq.com%2Ffeed.php" alt="visitor badge">
+              <a target="_blank" title="爱发电-@wdssmq" href="https://afdian.net/@wdssmq"><img src="https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%40wdssmq-blueviolet" title="爱发电-@wdssmq" alt="爱发电-@wdssmq"></a><a target="_blank" title="mastodon-wdssmq" href="https://wxw.moe/@wdssmq"><img src="https://img.shields.io/mastodon/follow/142218?domain=https%3A%2F%2Fwxw.moe%2F" title="mastodon-wdssmq" alt="mastodon-wdssmq"></a> <a target="_blank" title="QQ-349467624" href="https://wpa.qq.com/msgrd?v=3&uin=349467624&site=qq&menu=yes"><img src="https://img.shields.io/badge/QQ-349467624-0086F9" title="QQ-349467624" alt="QQ-349467624"></a>
+            </p>
+            -->
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan="2"><input type="submit" value="提交" /></td>
+          </tr>
+        </table>
+      </form>
     <?php } elseif ($act == "pushbul" || $act == "pushbul-save") { ?>
       <?php
       if ($act == "pushbul-save") {
@@ -175,8 +221,6 @@ InstallPlugin_xnxf_FeedPlus();
           </tr>
         </table>
       </form>
-      <p>查看：<?php echo xnxf_FeedPlus_a("{$zbp->host}feed.php", "查看"); ?></p>
-      <p>订阅：<?php echo xnxf_FeedPlus_a("https://feeds.pub/feed/{$enCodeFeed}", "订阅"); ?></p>
     <?php } else { ?>
       <!-- 默认表格 -->
       <table width="100%">
@@ -221,13 +265,26 @@ InstallPlugin_xnxf_FeedPlus();
         </tbody>
       </table>
       <p>↑↑上述内容只会在RSS中输出</p>
-      <p>查看：<?php echo xnxf_FeedPlus_a("{$zbp->host}feed.php", "查看"); ?></p>
-      <p>订阅：<?php echo xnxf_FeedPlus_a("https://feeds.pub/feed/{$enCodeFeed}", "订阅"); ?></p>
-      <p>订阅：<?php echo xnxf_FeedPlus_a("https://www.innoreader.com/feed/{$enCodeFeed}", "订阅"); ?></p>
       <!-- 默认表格结束 -->
     <?php } ?>
+    <p>查看：<?php echo xnxf_FeedPlus_a("{$zbp->host}feed.php", "查看"); ?></p>
+    <p>订阅：<?php echo xnxf_FeedPlus_a("https://feeds.pub/feed/{$enCodeFeed}", "订阅"); ?></p>
+    <p>订阅：<?php echo xnxf_FeedPlus_a("https://www.innoreader.com/feed/{$enCodeFeed}", "订阅"); ?></p>
   </div>
 </div>
+<script>
+  $(function() {
+    $(".SubMenu>a").each(function() {
+      const $el = $(this);
+      if ($el.hasClass("nav-<?php echo $act; ?>")) {
+        $el.find("span").addClass("m-now");
+      }
+    });
+    if ($(".m-left.m-now").length === 0) {
+      $(".SubMenu a.nav-home").find("span").addClass("m-now");
+    }
+  });
+</script>
 <?php
 require $blogpath . 'zb_system/admin/admin_footer.php';
 RunTime();

@@ -11,11 +11,24 @@ function ActivePlugin_xnxf_FeedPlus()
   Add_Filter_Plugin('Filter_Plugin_ViewAuto_Begin', 'xnxf_FeedPlus_Rewrite');
   Add_Filter_Plugin('Filter_Plugin_ViewPost_Template', 'xnxf_FeedPlus_LuckyView');
   Add_Filter_Plugin('Filter_Plugin_ViewFeed_End', 'xnxf_FeedPlus_AddToFeed');
-  // Add_Filter_Plugin('Filter_Plugin_BetterFeed_AddItem', 'xnxf_FeedPlus_GetLucky');
+  Add_Filter_Plugin('Filter_Plugin_Post_Get', 'xnxf_FeedPlus_GetContent');
 }
 function xnxf_FeedPlus_RemoveHooks()
 {
   Remove_Filter_Plugin('Filter_Plugin_Feed_Begin', 'Include_Index_Begin');
+}
+function xnxf_FeedPlus_GetContent($that, $name)
+{
+  global $zbp;
+  if ($zbp->action !== "feed") {
+    return;
+  }
+  if ($name === "Content") {
+    $data = $that->GetData();
+    $GLOBALS['hooks']['Filter_Plugin_Post_Get']['xnxf_FeedPlus_GetContent'] = PLUGIN_EXITSIGNAL_RETURN;
+    $ContentAfter = $zbp->Config('xnxf_FeedPlus')->ContentAfter;
+    return $data['Content'] . "<hr>" . $ContentAfter;
+  }
 }
 function xnxf_FeedPlus_AddToFeed(&$rss2)
 {
