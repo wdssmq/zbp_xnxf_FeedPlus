@@ -1,5 +1,4 @@
 <?php
-require __DIR__  . '/class/UA_JSON.php';
 //注册插件
 RegisterPlugin("xnxf_FeedPlus", "ActivePlugin_xnxf_FeedPlus");
 function ActivePlugin_xnxf_FeedPlus()
@@ -47,7 +46,6 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
     }
   }
   $Post = xnxf_FeedPlus_GetLucky();
-  // if (UA_JSON::Add() && $Post !== null) {
   if ($Post !== null) {
     $Post->Content = str_replace("[lock]", "", $Post->Content);
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
@@ -311,9 +309,7 @@ function InstallPlugin_xnxf_FeedPlus()
     $DataDB = new xnxf_FeedPlus_Posts();
     file_put_contents($filePostDB, json_encode($DataDB));
   }
-  UA_JSON::Create();
-  UA_JSON::Add();
-  UA_JSON::Del();
+
   if (!is_file(xnxf_FeedPlus_Path('LuckyDB'))) {
     $data = '{"Lucky":{"Time":1,"PageID":1,"Title":"【手慢无】点击查看福利","Link":"{%host%}lucky/{%hash%}.html","Content":"<p>不定期通过Feed发放福利</p><p>{%code%}</p><p>强烈建议使用下边地址订阅收取福利通知：</p><p><a href=\"{%feed%}\" target=\"_blank\" title=\"{%feed%}\">{%feed%}</a></p>"}}';
     file_put_contents(xnxf_FeedPlus_Path('LuckyDB'), $data);
