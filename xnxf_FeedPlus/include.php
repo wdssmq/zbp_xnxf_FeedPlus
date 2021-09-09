@@ -6,7 +6,7 @@ function ActivePlugin_xnxf_FeedPlus()
   Add_Filter_Plugin('Filter_Plugin_Zbp_Load', 'xnxf_FeedPlus_RemoveHooks');
   Add_Filter_Plugin('Filter_Plugin_Admin_TopMenu', 'xnxf_FeedPlus_AddMenu');
   Add_Filter_Plugin('Filter_Plugin_PostArticle_Core', 'xnxf_FeedPlus_Post');
-  Add_Filter_Plugin('Filter_Plugin_Edit_Begin', 'xnxf_FeedPlus_Get');
+  Add_Filter_Plugin('Filter_Plugin_Edit_Begin', 'xnxf_FeedPlus_FeedEdit');
   Add_Filter_Plugin('Filter_Plugin_ViewAuto_Begin', 'xnxf_FeedPlus_Rewrite');
   Add_Filter_Plugin('Filter_Plugin_ViewPost_Template', 'xnxf_FeedPlus_LuckyView');
   Add_Filter_Plugin('Filter_Plugin_ViewFeed_End', 'xnxf_FeedPlus_AddToFeed');
@@ -29,6 +29,8 @@ function xnxf_FeedPlus_GetContent($that, $name)
     return $data['Content'] . "<hr>" . $ContentAfter;
   }
 }
+
+// 主要接口，向 RSS 中添加项目
 function xnxf_FeedPlus_AddToFeed(&$rss2)
 {
   global $zbp;
@@ -36,7 +38,9 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
     return;
   if (GetVars("redirect", "GET") !== null)
     Redirect301($zbp->feedurl);
-  $time = time();
+  // 全局时间信息
+  $zbp->Config('xnxf_FeedPlus')->time = time();
+  // 从文件获取 RSS 专属文章
   $DataDB = json_decode(file_get_contents(xnxf_FeedPlus_Path("PostDB")));
   $DataDB->Posts = (array)$DataDB->Posts;
   foreach ($DataDB->Posts as $k => $v) {
@@ -45,16 +49,32 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
       $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
     }
   }
+  // 获取手慢无内容
   $Post = xnxf_FeedPlus_GetLucky();
   if ($Post !== null) {
     $Post->Content = str_replace("[lock]", "", $Post->Content);
     $Post->Content = str_replace("[/lock]", "", $Post->Content);
     $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
+  // 获取 PushBullet 数据
+  xnxf_FeedPlus_PushBulletAPI($rss2);
+  // RSS 中输出额外文章
+  $postList = xnxf_FeedPlus_GetPostList();
+  foreach ($postList as $Post) {
+    $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
+  }
+}
+
+// PushBullet 接口
+function xnxf_FeedPlus_PushBulletAPI(&$rss2)
+{
+  global $zbp;
   $FP_CFG = $zbp->Config('xnxf_FeedPlus');
+  $time = $zbp->Config('xnxf_FeedPlus')->time;
   $PushKey = $FP_CFG->PushKey;
-  if ($PushKey == "")
+  if ($PushKey == "") {
     return null;
+  }
   $PubWord = $FP_CFG->PubWord;
   $PriKey = GetVars("PriKey", "GET");
   if (VerifyWebToken($PriKey, 'PriKey')) {
@@ -72,15 +92,14 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
   $http_post->setRequestHeader('Authorization', 'Basic ' . base64_encode($PushKey . ':' . $PushKey));
   $http_post->send();
   $objData = json_decode($http_post->responseText);
-  // var_dump($objData);
-  // echo $http_post->responseText;
-  // die();
+
   if (empty($objData)) {
     return;
   }
   foreach ($objData->pushes as $item) {
     // $item->modified = ceil($item->modified);
     // $item->created = ceil($item->created);
+    // 只输出最新信息
     if ($time - $item->created > 3600 * 37) {
       continue;
     }
@@ -108,6 +127,29 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
       $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
   }
 }
+
+// 按更新时间获取文章
+function xnxf_FeedPlus_GetPostList()
+{
+  global $zbp;
+  $curTime =  $zbp->Config('xnxf_FeedPlus')->time;
+  $curHours = intval($curTime / 3600);
+  // $curDays = intval($curTime / 86400);
+  $w = array();
+  $w[] = array('=', 'log_Type', 0);
+  $w[] = array('=', 'log_Status', 0);
+  $order = array(
+    'log_UpdateTime' => 'DESC'
+  );
+  if ($curHours % 89 <= 3) {
+    $order = array(
+      'log_ViewNums' => 'ASC'
+    );
+  }
+  $Posts = $zbp->GetPostList('*', $w, $order, $zbp->option['ZC_RSS2_COUNT'] * 2, null);
+  return $Posts;
+}
+
 function xnxf_FeedPlus_AddMenu(&$m)
 {
   global $zbp;
@@ -217,7 +259,8 @@ function xnxf_FeedPlus_Edit_Link()
   echo '<script type="text/javascript">var sEdtLink = "' . $xnxf_link . '"</script>';
 }
 $xnxf_link = "";
-function xnxf_FeedPlus_Get()
+// 接管编辑页
+function xnxf_FeedPlus_FeedEdit()
 {
   global $article;
   global $xnxf_link;
