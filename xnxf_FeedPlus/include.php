@@ -61,7 +61,7 @@ function xnxf_FeedPlus_AddToFeed(&$rss2)
   // RSS 中输出额外文章
   $postList = xnxf_FeedPlus_GetPostList();
   foreach ($postList as $Post) {
-    $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->PostTime);
+    $rss2->addItem($Post->Title, $Post->Url, $Post->Content, $Post->UpdateTime);
   }
 }
 
@@ -155,15 +155,15 @@ function xnxf_FeedPlus_AddMenu(&$m)
   global $zbp;
   $m[] = MakeTopMenu("root", 'Feed输出扩展', $zbp->host . "zb_users/plugin/xnxf_FeedPlus/main.php", "", "FeedPlus");
 }
-function xnxf_FeedPlus_Rewrite($inpurl)
+function xnxf_FeedPlus_Rewrite($original_url, $url)
 {
   global $zbp;
-  $url = GetValueInArray(explode('?', $inpurl), '0');
+  if (!$LuckyData = xnxf_FeedPlus_GetLuckyDB()) {
+    return;
+  }
   if ($zbp->cookiespath === substr($url, 0, strlen($zbp->cookiespath))) {
     $url = substr($url, strlen($zbp->cookiespath));
   }
-  $url = trim(urldecode($url), '/');
-  $LuckyData = json_decode(file_get_contents(xnxf_FeedPlus_Path('LuckyDB')));
   $LuckyCFG = &$LuckyData->Lucky;
   $r = UrlRule::OutputUrlRegEx(str_replace("{%hash%}", "{%alias%}", $LuckyCFG->Link), 'page');
   $m = array();
@@ -178,21 +178,22 @@ function xnxf_FeedPlus_Rewrite($inpurl)
     }
   }
 }
+
+// 网站内页查看 LuckyData
 function xnxf_FeedPlus_LuckyView(&$template)
 {
   global $zbp;
   $hash = GetVars("hash", "GET");
   if ($hash != null) {
-    $LuckyData = json_decode(file_get_contents(xnxf_FeedPlus_Path('LuckyDB')));
-    $title = &$template->GetTags('title');
     $article = &$template->GetTags('article');
+    $title = &$template->GetTags('title');
     $Post = xnxf_FeedPlus_GetLucky($hash);
     if ($Post != null && $hash == GetVars("hash", "GET")) {
       $title = $Post->Title;
       $article->Title = $Post->Title;
       $article->Content = $Post->Content;
       $article->IsLock = true;
-      $GLOBALS['LuckyLink'] = $Post->Url;
+      $zbp->Config('xnxf_FeedPlus')->LuckyLink = $Post->Url;
       Add_Filter_Plugin('Filter_Plugin_Post_Url', 'xnxf_FeedPlus_LuckyLink');
     } else {
       Redirect301($article->Url);
@@ -201,17 +202,22 @@ function xnxf_FeedPlus_LuckyView(&$template)
 }
 function xnxf_FeedPlus_LuckyLink($post)
 {
+  global $zbp;
   $GLOBALS['hooks']['Filter_Plugin_Post_Url']['xnxf_FeedPlus_LuckyLink'] = PLUGIN_EXITSIGNAL_RETURN;
-  return $GLOBALS['LuckyLink'];
+  return $zbp->Config('xnxf_FeedPlus')->LuckyLink;
 }
+// 将 LuckyData 数据组织为文章
 function xnxf_FeedPlus_GetLucky(&$hash = "")
 {
   global $zbp;
   $time = time();
-  $LuckyData = json_decode(file_get_contents(xnxf_FeedPlus_Path('LuckyDB')));
+
   $arrCodes = $zbp->Config('xnxf_FeedPlus')->LuckyCode;
   if (count($arrCodes) === 0)
-    return;
+    return null;
+  if (!$LuckyData = xnxf_FeedPlus_GetLuckyDB()) {
+    return null;
+  }
   $LuckyCFG = &$LuckyData->Lucky;
   if ($LuckyCFG->Time > $time && $hash == "")
     return null;
@@ -258,6 +264,7 @@ function xnxf_FeedPlus_Edit_Link()
   global $xnxf_link;
   echo '<script type="text/javascript">var sEdtLink = "' . $xnxf_link . '"</script>';
 }
+
 $xnxf_link = "";
 // 接管编辑页
 function xnxf_FeedPlus_FeedEdit()
@@ -310,6 +317,19 @@ function xnxf_FeedPlus_Post($article)
     Redirect(xnxf_FeedPlus_Path("Main", "host"));
   }
 }
+
+// 读取 LuckyDB
+function xnxf_FeedPlus_GetLuckyDB()
+{
+  $LuckyDB = xnxf_FeedPlus_Path("LuckyDB");
+  if (!is_file($LuckyDB)) {
+    return null;
+  }
+  $content = file_get_contents($LuckyDB);
+  $LuckyData = json_decode($content);
+  return $LuckyData;
+}
+
 function xnxf_FeedPlus_Path($file, $t = "path")
 {
   global $zbp;
