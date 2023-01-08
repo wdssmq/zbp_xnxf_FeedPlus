@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin version="php">
 <id>xnxf_FeedPlus</id>
-<name>Feed输出扩展【PHP】</name>
+<name>Feed 输出扩展【PHP】</name>
 <url>//jq.qq.com/?_wv=1027&amp;k=555hND5</url>
-<note>对Feed功能进行扩展，加入文章以外的内容</note>
+<note>对 Feed 功能进行扩展，加入文章以外的内容</note>
 <description>置百丈玄冰而崩裂，掷须臾池水而漂摇。</description>
 <path>main.php</path>
 <include>include.php</include>
@@ -18,11 +18,11 @@
   <email></email>
   <url></url>
 </source>
-<adapted>151740</adapted>
-<version>1.0.1</version>
+<adapted>162210</adapted>
+<version>1.0.2</version>
 <pubdate>2016-07-25</pubdate>
-<modified>2021-09-09</modified>
-<price>13.7</price>
+<modified>2023-01-08</modified>
+<price>0</price>
 <phpver>5.4</phpver>
 <advanced>
   <dependency></dependency>
