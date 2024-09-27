@@ -160,7 +160,7 @@ InstallPlugin_xnxf_FeedPlus();
             <!--
             <p>
               <img src="https://visitor-badge.laobi.icu/badge?page_id=https%3A%2F%2Fwww.wdssmq.com%2Ffeed.php" alt="visitor badge">
-              <a target="_blank" title="爱发电-@wdssmq" href="https://afdian.net/@wdssmq"><img src="https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%40wdssmq-blueviolet" title="爱发电-@wdssmq" alt="爱发电-@wdssmq"></a><a target="_blank" title="mastodon-wdssmq" href="https://wxw.moe/@wdssmq"><img src="https://img.shields.io/mastodon/follow/142218?domain=https%3A%2F%2Fwxw.moe%2F" title="mastodon-wdssmq" alt="mastodon-wdssmq"></a> <a target="_blank" title="QQ-349467624" href="https://wpa.qq.com/msgrd?v=3&uin=349467624&site=qq&menu=yes"><img src="https://img.shields.io/badge/QQ-349467624-0086F9" title="QQ-349467624" alt="QQ-349467624"></a>
+              <a target="_blank" title="爱发电-@wdssmq" href="https://afdian.com/@wdssmq"><img src="https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%40wdssmq-blueviolet" title="爱发电-@wdssmq" alt="爱发电-@wdssmq"></a><a target="_blank" title="mastodon-wdssmq" href="https://wxw.moe/@wdssmq"><img src="https://img.shields.io/mastodon/follow/142218?domain=https%3A%2F%2Fwxw.moe%2F" title="mastodon-wdssmq" alt="mastodon-wdssmq"></a> <a target="_blank" title="QQ-349467624" href="https://wpa.qq.com/msgrd?v=3&uin=349467624&site=qq&menu=yes"><img src="https://img.shields.io/badge/QQ-349467624-0086F9" title="QQ-349467624" alt="QQ-349467624"></a>
             </p>
             -->
           </tr>
